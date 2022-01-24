@@ -1,0 +1,439 @@
+# SCRaMbLE simulation 3
+import random
+import matplotlib.pyplot as plt
+from SCRaMbLE_simulation_3_circular import SCRaMbLE4_circular
+from Mapping_coverage_MM import plot_LU_CN
+
+# This function was copied from comparison_sol.py
+def LoxP_unit_count_list(Path, list_unit):
+    LP_unit_count = 0
+    for unit in list_unit:
+        LP_unit_count = LP_unit_count + Path.count(unit) + Path.count(-unit)
+    return LP_unit_count
+
+def deletion(pos1, pos2, syn_chr):
+    if pos1 > pos2:
+        temp=pos1
+        pos1=pos2
+        pos2=temp
+    return syn_chr[:pos1] + syn_chr[pos2:]
+
+def deletion_essential0(pos1, pos2, syn_chr, essential=[]):
+    if pos1 > pos2:
+        temp=pos1
+        pos1=pos2
+        pos2=temp
+    # It check if all the essential fragments are in the synthetic chromosome before the deletion happen. If there are not, it simply continue with the deletion.
+    syn_chr_abs = [abs(ele) for ele in syn_chr]
+    T1 = all(elem in syn_chr_abs for elem in essential)
+    # It create the new chromosome with the deletion
+    new_chr = syn_chr[:pos1] + syn_chr[pos2:]
+    # It check if all the essential fragments are in the synthetic chromosome after the deletion happen. If there are not, it will output the original chr.
+    new_chr_abs = [abs(ele) for ele in new_chr]
+    T2 = all(elem in new_chr_abs for elem in essential)
+    if T2 == False and T1 == True and essential != []:
+        return syn_chr
+    else:
+        return new_chr
+
+def deletion_essential(pos1, pos2, syn_chr, essential=[]):
+    if pos1 > pos2:
+        temp=pos1
+        pos1=pos2
+        pos2=temp
+    if essential==[]:
+        return syn_chr[:pos1] + syn_chr[pos2:]
+    # It check if all the essential fragments are in the synthetic chromosome before the deletion happen. If there are not, it simply continue with the deletion.
+    new_essential = []
+    syn_chr_abs = [abs(ele) for ele in syn_chr]
+    for esse in essential:
+        if esse in syn_chr_abs:
+            new_essential.append(esse)
+    # It create the new chromosome with the deletion
+    new_chr = syn_chr[:pos1] + syn_chr[pos2:]
+    # It check if all the essential fragments are in the synthetic chromosome after the deletion happened. If there are not, it will output the original chr.
+    new_chr_abs = [abs(ele) for ele in new_chr]
+    T = all(elem in new_chr_abs for elem in new_essential)
+    if T == False:
+        return syn_chr
+    else:
+        return new_chr
+
+#A = [1,2,3,4,5,6]
+#print(deletion_essential(0,3,A, [3,4,7]))
+#print(deletion(3,0,A))
+
+
+def inversion(pos1, pos2, syn_chr):
+    if pos1 > pos2:
+        temp=pos1
+        pos1=pos2
+        pos2=temp
+    inv_seq1 = syn_chr[pos1:pos2]
+    inv_seq2 = []
+    for loxP_f in inv_seq1:
+        inv_seq2.insert(0, -loxP_f)
+    return syn_chr[:pos1] + inv_seq2 + syn_chr[pos2:]
+
+#print(inversion(5,2,syn_chr))
+
+
+def duplication(pos1, pos2, syn_chr, CEN=[]):
+    if pos1 > pos2:
+        temp=pos1
+        pos1=pos2
+        pos2=temp
+    new_chr = syn_chr[:pos1] + 2*syn_chr[pos1:pos2] + syn_chr[pos2:]
+    if LoxP_unit_count_list(new_chr, CEN) > 1:
+        return syn_chr
+    else:
+        return new_chr
+
+
+def translocation(chr1, chr2):
+    if len(chr1) <= 1 or len(chr2) <= 1:
+        return [chr1, chr2]
+    pos1 = random.randrange(1, len(chr1))
+    pos2 = random.randrange(1, len(chr2))
+    new_chr1 = chr1[:pos1] + chr2[pos2:]
+    new_chr2 = chr2[:pos2] + chr1[pos1:]
+    return [new_chr1, new_chr2]
+
+#A = [1,2,3,4,5,6]
+#B = [12,13,14,15,16,17,18,19,20]
+#print(translocation(A , B))
+
+def SCRaMbLE(syn_chr):
+    pos1 = random.randrange(1, len(syn_chr))
+    pos2 = random.randrange(1, len(syn_chr))
+    if pos1 > pos2:
+        temp=pos1
+        pos1=pos2
+        pos2=temp
+    if pos1 == pos2:
+        print("Nothing happened")
+        return syn_chr
+    event = random.choices(["NULL", "DEL", "INV", "DUP"], [3, 2, 2, 1], k=1)[0]
+    if event == "NULL":
+        return syn_chr
+    print(event, "between LoxP:", pos1, "and LoxP:", pos2)
+    if event == "DEL":
+        return deletion(pos1, pos2, syn_chr)
+    if event == "INV":
+        return inversion(pos1, pos2, syn_chr)
+    if event == "DUP":
+        return duplication(pos1, pos2, syn_chr)
+
+
+
+def repeated_SCRaMbLE(syn_chr, Number_events):
+    new_chr = syn_chr
+    for event in range(Number_events):
+        new_chr = SCRaMbLE(new_chr)
+        print(new_chr)
+    return new_chr
+
+
+
+def SCRaMbLE2(syn_chr, Number_events):
+    new_chr = syn_chr
+    events = random.choices(["NULL", "DEL", "INV", "DUP"], [3, 2, 2, 1], k=Number_events)
+    for event in events:
+        pos1 = random.randrange(2, len(syn_chr))
+        pos2 = random.randrange(2, len(syn_chr))
+        if pos1 > pos2:
+            temp = pos1
+            pos1 = pos2
+            pos2 = temp
+        if pos1 == pos2:
+            #print("Nothing happened")
+            continue
+        if event == "NULL":
+            new_chr = new_chr
+        if event == "DEL":
+            new_chr = deletion(pos1, pos2, new_chr)
+        if event == "INV":
+            new_chr = inversion(pos1, pos2, new_chr)
+        if event == "DUP":
+            new_chr = duplication(pos1, pos2, new_chr)
+        #print(event, "between LoxP:", pos1, "and LoxP:", pos2)
+        #print(new_chr)
+    return new_chr
+
+
+def SCRaMbLE3(syn_chr, Number_events, mu=7, sigma=7):
+    new_chr = syn_chr
+    events = random.choices(["NULL", "DEL", "INV", "DUP"], [3, 2, 2, 1], k=Number_events)
+    for event in events:
+        pos1 = random.randrange(2, len(syn_chr))
+        # pick a random number to decide the length of the fragment
+        R = int(random.gauss(mu, sigma))
+        if R < 1:
+            R = 1
+        pos2 = pos1 + R
+        if pos2 > len(syn_chr):
+            pos2 = len(syn_chr)
+        if event == "NULL":
+            new_chr = new_chr
+        if event == "DEL":
+            new_chr = deletion(pos1, pos2, new_chr)
+        if event == "INV":
+            new_chr = inversion(pos1, pos2, new_chr)
+        if event == "DUP":
+            new_chr = duplication(pos1, pos2, new_chr)
+        #print(event, "between LoxP:", pos1, "and LoxP:", pos2)
+        #print(new_chr)
+    return new_chr
+
+def SCRaMbLE4(syn_chr, Number_events, essential=[], mu=0, sigma=10, CEN=[], probability=[3, 2, 2, 1]):
+    if len(syn_chr) <= 1:
+        return syn_chr
+    # Add the Centromere to the essential LU
+    for LU in CEN:
+        if LU not in essential:
+            essential.append(LU)
+
+    new_chr = syn_chr[:]
+    events = random.choices(["NULL", "DEL", "INV", "DUP"], probability, k=Number_events)
+    for event in events:
+        pos1 = random.randrange(0, len(new_chr), 1)
+        # pick a random number to decide the length of the fragment. In the Gaussian distribution, mu is the mean and sigma is the standard deviation.
+        # Discretized truncated normal distribution (DTND)
+        #R = int(random.gauss(mu, sigma))
+        #if R < 1:
+        #    R = 1
+        # Half-normal distribution. https://en.wikipedia.org/wiki/Half-normal_distribution
+        R = 0
+        while R == 0:
+            # this loop makes repeat the choosing if R == 0
+            R = abs(int(random.gauss(mu, sigma)))
+
+        # the second cut position pos2 could be before or after the first position pos1
+        if random.random() >= 0.5 or pos1 == 0:
+            pos2 = pos1 + R
+        else:
+            pos2 = pos1 - R
+
+        if pos2 >= len(new_chr):
+            pos2 = len(new_chr)
+        if pos2 < 0:
+            pos2 = 0
+        if pos1 == pos2:    # Nothing happens
+            continue
+        # I want that the position 1 is always smaller than position 2
+        if pos1 > pos2:
+            temp = pos1
+            pos1 = pos2
+            pos2 = temp
+
+        # This is just to catch some errors in the function
+        if pos1 < 0 or pos2 < 0 or pos1 > len(new_chr) or pos2 > len(new_chr):
+            print("There is an error with the SCRaMbLE function. pos1 or pos2 are out of range.")
+            print(new_chr)
+            print("chr length =", len(new_chr))
+            print("pos1 = ", pos1, "pos2 = ", pos2)
+
+        if event == "NULL":
+            continue
+        if event == "DEL":
+            new_chr = deletion_essential(pos1, pos2, new_chr, essential)
+        if event == "INV":
+            new_chr = inversion(pos1, pos2, new_chr)
+        if event == "DUP":
+            new_chr = duplication(pos1, pos2, new_chr, CEN)
+        #print(event, "between LoxP:", pos1, "and LoxP:", pos2)
+        #print(new_chr)
+    return new_chr
+
+# Plot the SCRaMbLE events length. This should follow a "discretized half normal distribution"
+def plot_events_length(events=100000, mu=0, sigma=10):
+    syn_chr = list(range(1,45))
+    Dict_E_length = {}
+    for i in range(len(syn_chr)+1):
+        Dict_E_length[i] = 0
+
+    for _ in range(events):
+        pos1 = random.randrange(0, len(syn_chr), 1)
+        # pick a random number to decide the length of the fragment. In the Gaussian distribution, mu is the mean and sigma is the standard deviation.
+        # Discretized truncated normal distribution (DTND)
+        #R = int(random.gauss(mu, sigma))
+        #if R < 1:
+        #    R = 1
+        # Half-normal distribution
+        R = 0
+        while R == 0:
+            R = abs(int(random.gauss(mu, sigma)))
+
+        # the second cut position pos2 could be before or after the first position pos1
+        if random.random() >= 0.5 or pos1 == 0:
+            pos2 = pos1 + R
+        else:
+            pos2 = pos1 - R
+
+        if pos2 >= len(syn_chr):
+            pos2 = len(syn_chr)
+        if pos2 < 0:
+            pos2 = 0
+        E_length = abs(pos2 - pos1)
+        Dict_E_length[E_length] = Dict_E_length[E_length] + 1
+    # remove keys with zero events.
+    for i in range(len(syn_chr)+1):
+        if Dict_E_length[i] == 0:
+            Dict_E_length.pop(i, None)
+    #Dict_E_length.pop(1, None)
+    #Dict_E_length[1] = Dict_E_length[2] + 150
+
+    # Convert the event length number in probability
+    Dict_E_length_probability = {}
+    for Key, Value in Dict_E_length.items():
+        Dict_E_length_probability[Key] = Value / events
+
+    # Plot the Events length
+    plt.figure(figsize=(20, 10))
+    plt.bar(Dict_E_length.keys(), Dict_E_length_probability.values(), align='center')
+    plt.xticks(range(max(Dict_E_length.keys()) +1), range(max(Dict_E_length_probability.keys())+1))
+    plt.ylabel("Events probability")
+    plt.xlabel("Length")
+    plt.title("Events length distribution")
+    plt.text(max(Dict_E_length.keys()) * 0.8, max(Dict_E_length_probability.values()) * 0.85, "Number of Events = " + str(events) + "\n" + "Mean length (mu) = " + str(mu) + "\n" + "Sigma = " + str(sigma))
+    #plt.savefig("Events_length_distribution.png", dpi=200)
+    plt.show()
+    return Dict_E_length_probability
+
+# This make sure that there is at last one SCRaMbLE event each time
+def force_SCRaMLE(syn_chr, Number_events, essential=[], mu=0, sigma=7, CEN=[], probability=[0, 2, 2, 1]):
+    new_chr2 = syn_chr[:]
+    for _ in range(Number_events):
+        new_chr1 = new_chr2[:]
+        counter = 0         # the counter make sure the program do not get stuck and loop infinite times.
+        while new_chr1 == new_chr2 and counter < 20:
+            new_chr2 = SCRaMbLE4(new_chr1, 1, essential=essential, mu=mu, sigma=sigma, CEN=CEN, probability=probability)
+            counter = counter + 1
+        #print(new_chr2)
+    return new_chr2
+
+# This make sure that there is at last one SCRaMbLE event each time
+def force_SCRaMLE_lin_cir(syn_chr: list, Number_events: int, essential=[], circular=False, mu=0, sigma=7, CEN=[], force=True, probability=[0, 2, 2, 1]):
+    if not(force):
+        if circular:
+            return SCRaMbLE4_circular(syn_chr=syn_chr, Number_events=Number_events, essential=essential, mu=mu, sigma=sigma, CEN=CEN, probability=probability)
+        else:
+            return SCRaMbLE4(syn_chr=syn_chr, Number_events=Number_events, essential=essential, mu=mu, sigma=sigma, CEN=CEN, probability=probability)
+    new_chr2 = syn_chr[:]
+    for _ in range(Number_events):
+        new_chr1 = new_chr2[:]
+        counter = 0         # the counter make sure the program do not get stuck and loop infinite times.
+        while new_chr1 == new_chr2 and counter < 20:
+            if circular:
+                new_chr2 = SCRaMbLE4_circular(new_chr1, 1, essential=essential, mu=mu, sigma=sigma, CEN=CEN, probability=probability)
+            else:
+                new_chr2 = SCRaMbLE4(new_chr1, 1, essential=essential, mu=mu, sigma=sigma, CEN=CEN, probability=probability)
+            counter = counter + 1
+        #print(new_chr2)
+    return new_chr2
+
+#syn_chr = list(range(1, 45, 1))
+#essential = [2,7,9,10,12,20]
+#print(force_SCRaMLE(syn_chr, 500, essential))
+
+"""
+mu=7
+sigma=7
+for i in range(50):
+    R = int(random.gauss(mu, sigma))
+    print(R)
+"""
+
+def SCRaMbLE4_lin_cir(syn_chr, Number_events, essential=[], circular=False, mu=7, sigma=7, CEN=[], probability=[3, 2, 2, 1]):
+    if circular:
+        return SCRaMbLE4_circular(syn_chr, Number_events, essential, mu, sigma, CEN=CEN, probability=probability)
+    else:
+        return SCRaMbLE4(syn_chr, Number_events, essential, mu, sigma, CEN=CEN, probability=probability)
+
+
+def SCRaMbLE_muliple_chrs(list_chr: list, essential=[], circular=False, mu=0, sigma=7, CEN=[], force=True, probability=[0, 2, 2, 1]):
+    Number_events = 1
+    if isinstance(list_chr[0], list):       # There are multiple chromosomes
+        new_chr = list_chr[:]
+        # find the length of all the chr
+        list_chr_name = list(range(len(list_chr)))
+        list_chr_len = []
+        chr_len = 0
+        for chr in list_chr:
+            chr_len = chr_len + len(chr)
+            list_chr_len.append(len(chr))
+        #print("list_chr_len =", list_chr_len)
+        # decide where the SCRaMbLE event appear. More the chr is long more is the likelihood to be chosen.
+        first_event = random.choices(list_chr_name, list_chr_len, k=1)[0]
+        # decide if the SCRaMbLE event is intra_chr or inter_chr (translocation). The translocations have a probability of 5% to happen.
+        if random.random() < 0.05:
+            #print("Translocation")
+            # remove the first chr from the list and chose the second chr for the translocation
+            list_chr_name.pop(first_event)
+            list_chr_len.pop(first_event)
+            second_event = random.choices(list_chr_name, list_chr_len, k=1)[0]
+            # generate the translocation between the two chromosomes chosen
+            translocated_chr = translocation(new_chr[first_event], new_chr[second_event])
+            # If the centromere list is not provided, do nothing
+            if CEN == []:
+                new_chr[first_event] = translocated_chr[0]
+                new_chr[second_event] = translocated_chr[1]
+            else:
+                # check if the translocated chromosomes have 1 and only 1 CEN. If they have 0 or 2 or more CEN, the program will discard the translocation.
+                CEN_chr1 = LoxP_unit_count_list(translocated_chr[0], CEN)
+                CEN_chr2 = LoxP_unit_count_list(translocated_chr[1], CEN)
+                if CEN_chr1 == 1 and CEN_chr2 == 1:
+                    new_chr[first_event] = translocated_chr[0]
+                    new_chr[second_event] = translocated_chr[1]
+        else:
+            new_chr[first_event] = force_SCRaMLE_lin_cir(new_chr[first_event], Number_events, essential=essential, circular=circular, mu=mu, sigma=sigma, CEN=CEN, force=force, probability=probability)
+        return new_chr
+    else:
+        return force_SCRaMLE_lin_cir(list_chr, Number_events, essential=essential, circular=circular, mu=mu, sigma=sigma, CEN=CEN, force=force, probability=probability)
+
+def SCRaMbLE_muliple_chrs_events(list_chr: list, Number_events=10, essential=[], circular=False, mu=0, sigma=7, CEN=[], force=True, probability=[0, 2, 2, 1]):
+    new_chr = list_chr[:]
+    if not (force):
+        for _ in range(Number_events):
+            new_chr = SCRaMbLE_muliple_chrs(new_chr, essential=essential, circular=circular, mu=mu, sigma=sigma, CEN=CEN, force=force, probability=probability)
+    else:
+        new_chr2 = new_chr[:]
+        for _ in range(Number_events):
+            new_chr = new_chr2[:]
+            counter = 0         # the counter make sure the program do not get stuck and loop infinite times.
+            while new_chr == new_chr2 and counter < 20:
+                new_chr2 = SCRaMbLE_muliple_chrs(new_chr, essential=essential, circular=circular, mu=mu, sigma=sigma, CEN=CEN, force=force, probability=probability)
+                counter += 1
+    return new_chr
+
+#A = [[1,2,3,4,5,6],[7,8,9,10,11],[12,13,14,15,16,17,18,19,20]]
+#print(A)
+#print(SCRaMbLE_muliple_chrs(A))
+#print(SCRaMbLE_muliple_chrs_events(A, 20, [3,10,13], 7, 7, [3,10,13]))
+
+
+# test the code
+if __name__ == "__main__":
+
+    segments = 44  #number of loxP segments
+    syn_chr = list(range(1, segments+1, 1))
+    essential = [2,7,9,10,12,20]
+    print("syn_chr =", syn_chr)
+
+    for i in range(10):
+        print(SCRaMbLE4_lin_cir(syn_chr, 10, essential, False, probability=[2,1,1,2]))
+        print(SCRaMbLE4_lin_cir(syn_chr, 10, essential, True, probability=[2,1,1,2]))
+        print(force_SCRaMLE_lin_cir(syn_chr, 10, essential, False, probability=[2,1,1,2]))
+        print()
+
+    plot_events_length()
+
+    #syn_chr = list(range(1, 101, 1))
+    #essential = [50]
+
+    CHR_list = []
+    for i in range(1000):
+        print(i)
+        CHR_list.append(force_SCRaMLE_lin_cir(syn_chr, 50, essential, circular=False, CEN=[2], probability=[0,2,2,1]))
+    plot_LU_CN(CHR_list, Plot="boxplot")      #"histogram", "boxplot", "violinplot"
+    plot_LU_CN(CHR_list, Plot="histogram")      #"histogram", "boxplot", "violinplot"
