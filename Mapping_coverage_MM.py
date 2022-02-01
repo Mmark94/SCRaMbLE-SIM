@@ -1,8 +1,12 @@
 # Mapping
 from comparison_sol import LoxP_unit_count_Dict_list
 from comparison_sol import invert
+from SCRaMbLE_simulation_3 import force_SCRaMLE_lin_cir
 import matplotlib.pyplot as plt
 import statistics
+import numpy as np
+import matplotlib.cm as cm
+import random
 
 def mapping(solution, path):
     if solution == [] or path == []:
@@ -312,7 +316,7 @@ def find_max_value(Chrs):
 
 def count_LU_CN_multi(Chrs):
     Max_LU = find_max_value(Chrs)
-    LU_CN_TOT={}
+    LU_CN_TOT = {}
     for Chr in Chrs:
         count_LU = count_LU_CN(Chr, Max_LU=Max_LU)
         for key, value in count_LU.items():
@@ -322,7 +326,26 @@ def count_LU_CN_multi(Chrs):
                 LU_CN_TOT[key].append(value)
     return LU_CN_TOT
 
-def plot_LU_CN(Chrs, Plot="histogram"):
+def calculate_LU_CN_percentage(Chrs, max_CN=5):
+    num_chrs = len(Chrs)
+    LU_CN = count_LU_CN_multi(Chrs)
+    LU_CN_percentage = {}
+    for key, value in LU_CN.items():
+        # This changed all the CN bigger than max_CN into max_CN. So it can calculate the percentage of CN equal of bigger than max_CN
+        CN_cleaned = []
+        for CN in value:
+            if CN <= max_CN:
+                CN_cleaned.append(CN)
+            else:
+                CN_cleaned.append(max_CN)
+        percentage = []
+        for CN in range(max_CN+1):
+            # This will store the percentage of copy number (CN) for each LU
+            percentage.append(CN_cleaned.count(CN) / num_chrs)
+        LU_CN_percentage[key] = percentage
+    return LU_CN_percentage
+
+def plot_LU_CN(Chrs, Plot="histogram", essential=[], CEN=[]):
     LU_CN_TOT = count_LU_CN_multi(Chrs)
     LU_CN_mean = {}
     LU_CN_SD = {}
@@ -332,27 +355,121 @@ def plot_LU_CN(Chrs, Plot="histogram"):
     # Plot
     plt.figure(figsize=(20, 10))
     if Plot == "boxplot":
-        plt.boxplot(LU_CN_TOT.values(), labels=LU_CN_TOT.keys())
+        plt.boxplot(LU_CN_TOT.values(), labels=LU_CN_TOT.keys(), showfliers=True, showmeans=True)
     elif Plot == "violinplot":
         plt.violinplot(LU_CN_TOT.values())
     else:
         plt.bar(LU_CN_mean.keys(), LU_CN_mean.values(), align='center', yerr=LU_CN_SD.values(), capsize=5)
-    plt.ylabel("Mean LU CN")
+    plt.xticks(range(1, len(LU_CN_TOT.values()) + 1))
+    for esse in essential:
+        plt.gca().get_xticklabels()[esse-1].set_color("red")
+    if CEN != []:
+        plt.gca().get_xticklabels()[CEN[0] - 1].set_color("gold")
+    #plt.gca().get_xticklabels()[13].set_color("blue")
+    #plt.gca().get_xticklabels()[31].set_color("blue")
+    plt.ylabel("LU CN")
     plt.xlabel("LUs")
-    plt.title("Mean LU CN")
-    #plt.savefig("Mean_LU_CN.png", dpi=300)
-    #plt.savefig("Mean_LU_CN.svg", format='svg', dpi=300)
+    plt.title("LoxP Unit Copy Number")
+    #plt.savefig("LU_CN.png", dpi=300)
+    #plt.savefig("LU_CN.svg", format='svg', dpi=300)
     plt.show()
     plt.close()
     return None
 
-#B = [[3,3,1,1,2,3,6,4,5,6], [1,1,3,5,6,6,7], [3,3,5,6,1,1], [5,7,3,3,1,1,7]]
-#print(count_LU_CN(B[0], Max_LU=0))
-#print(count_LU_CN_multi(B))
-#plot_LU_CN(B)
+def plot_LU_CN_percentage(Chrs, max_CN=5, essential=[], CEN=[], filename="", SE=""):
+    LU_CN_percentage = calculate_LU_CN_percentage(Chrs, max_CN=max_CN)
+    #print(LU_CN_percentage)
+    LU_names = LU_CN_percentage.keys()
+    CN_percentage_sorted = [[] for _ in range(max_CN+1)]
+    for i in range(max_CN+1):
+        for LU in LU_CN_percentage.values():
+            CN_percentage_sorted[i].append(LU[i])
+    Bottom = [0 for _ in range(len(LU_CN_percentage.values()))]
+    #print("CN_percentage_sorted =", CN_percentage_sorted)
+    Labels = [str(x) for x in range(max_CN+1)]
+    Labels[-1] = ">=" + Labels[-1]
+    # get discrete colormap
+    # You can choose different gradients here: https://matplotlib.org/stable/tutorials/colors/colormaps.html
+    Colours = cm.Reds(np.linspace(0, 1, max_CN+1))     # Colours = Blues, Reds, Greys, YlGn, YlOrBr, binary
+
+    # Plot
+    plt.figure(figsize=(20, 10))
+    for i in range(max_CN+1):
+        plt.bar(LU_names, CN_percentage_sorted[i], bottom=Bottom, label=Labels[i], color=Colours[i])  # color=Colours[i]
+        # This sums the two lists bottom and the last values CN_percentage_sorted[i]
+        Bottom = [x + y for x, y in zip(Bottom, CN_percentage_sorted[i])]
+    #plt.bar(LU_CN_mean.keys(), LU_CN_mean.values(), align='center', yerr=LU_CN_SD.values(), capsize=5)
+    plt.xticks(range(1, len(LU_CN_percentage.values()) + 1))
+    for esse in essential:
+        plt.gca().get_xticklabels()[esse-1].set_color("red")
+    if CEN != []:
+        plt.gca().get_xticklabels()[CEN[0] - 1].set_color("gold")
+    #plt.gca().get_xticklabels()[13].set_color("blue")
+    #plt.gca().get_xticklabels()[31].set_color("blue")
+    plt.ylabel("Percentage LU CN")
+    plt.xlabel("LUs")
+    n_SE = ""
+    if SE != "":
+        n_SE = ". SE = " + str(SE)
+    plt.title("Percentage of LU CN" + n_SE)
+    plt.legend(loc=3)
+    if filename != "":
+        plt.savefig("SCRaMbLE_evolution_percentage_LU/percentage_LU_CN_" + filename + ".png", dpi=300)
+        #plt.savefig("SCRaMbLE_evolution_percentage_LU/percentage_LU_CN_" + filename + ".svg", format='svg', dpi=300)
+    else:
+        _=0
+        #plt.savefig("SCRaMbLE_evolution_percentage_LU/percentage_LU_CN.png", dpi=300)
+        #plt.savefig("SCRaMbLE_evolution_percentage_LU/percentage_LU_CN.svg", format='svg', dpi=300)
+    #plt.show()
+    plt.close()
+    return None
+
+# SCRaMbLEs many synthetic chromosomes and plots how the LU CN change.
+def SCRaMbLE_SIM_LU_CN(syn_chr, events=100, simulations=1000, essential=[], CEN=[], circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], max_CN=5):
+    steps = 5
+    snapshots = range(0, events+1, steps)
+    snapshots_SCRaMbLEd = []
+    SCRaMbLEd_chrs = [syn_chr[:] for _ in range(simulations)]
+    for E in range(0, events+1, 1):
+        print(E)
+        if E in snapshots:
+            snapshots_SCRaMbLEd.append(SCRaMbLEd_chrs[:])
+        for s in range(simulations):
+            # Perform SCRaMbLE on the synthetic chromosome
+            SCRaMbLEd_chrs[s] = force_SCRaMLE_lin_cir(SCRaMbLEd_chrs[s], 1, essential=essential, circular=circular, mu=mu, sigma=sigma, CEN=CEN, force=force, probability=probability)
+    # Plot
+    # These are some information to add to the saved files.
+    # Create a random seed to save the image
+    random_seed = str(random.random())[2:6]
+    if circular:  # record if the chromosome is linear or circular
+        lin_cir = "c"
+    else:
+        lin_cir = "l"
+    probability_str = ""  # record the probabilities of each event
+    for i in probability:
+        probability_str = probability_str + str(i)
+    # Do the actual plotting
+    for i in range(len(snapshots_SCRaMbLEd)):
+        filename = lin_cir + "_" + random_seed + "_sim" + str(simulations) + "_P" + probability_str + "_SE" + str(snapshots[i])
+        plot_LU_CN_percentage(snapshots_SCRaMbLEd[i], max_CN=max_CN, essential=essential, CEN=CEN, filename=filename, SE=str(snapshots[i]))
+    return None
 
 # test the code
 if __name__ == "__main__":
+
+    B = [[3, 3, 1, 1, 2, 3, 6, 4, 5, 6], [1, 1, 3, 5, 6, 6, 7], [3, 3, 5, 6, 1, 1], [5, 7, 3, 3, 1, 1, 7]]
+    # print(count_LU_CN(B[0], Max_LU=0))
+    # print(count_LU_CN_multi(B))
+    # print(calculate_LU_CN_percentage(B))
+    # plot_LU_CN(B, Plot="boxplot")
+    #plot_LU_CN_percentage(B, max_CN=5)
+
+    syn_chr = list(range(1, 45, 1))
+    essential = [2, 7, 9, 10, 12, 19, 20, 24]  # LUs 19 and 24 are not essential but required for fast growth. Deletion of LU 6 can also generate some slow growth phenotype.
+
+    SCRaMbLE_SIM_LU_CN(syn_chr, events=100, simulations=1000, essential=essential, CEN=[2], circular=True, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], max_CN=5)
+    # I use the following website to create the giff: https://ezgif.com/maker
+
     """
     from SCRaMbLE_DNA_simulation import DNA_extraction
     S = list(range(1, 45, 1))

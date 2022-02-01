@@ -2,7 +2,8 @@
 import random
 import matplotlib.pyplot as plt
 from SCRaMbLE_simulation_3_circular import SCRaMbLE4_circular
-from Mapping_coverage_MM import plot_LU_CN
+#from Mapping_coverage_MM import plot_LU_CN
+#from Mapping_coverage_MM import plot_LU_CN_percentage
 
 # This function was copied from comparison_sol.py
 def LoxP_unit_count_list(Path, list_unit):
@@ -417,7 +418,7 @@ if __name__ == "__main__":
 
     segments = 44  #number of loxP segments
     syn_chr = list(range(1, segments+1, 1))
-    essential = [2,7,9,10,12,20]
+    essential = [2, 7, 9, 10, 12, 19, 20, 24]  # LUs 19 and 24 are not essential but required for fast growth. Deletion of LU 6 can also generate some slow growth phenotype.
     print("syn_chr =", syn_chr)
 
     for i in range(10):
@@ -427,13 +428,3 @@ if __name__ == "__main__":
         print()
 
     plot_events_length()
-
-    #syn_chr = list(range(1, 101, 1))
-    #essential = [50]
-
-    CHR_list = []
-    for i in range(1000):
-        print(i)
-        CHR_list.append(force_SCRaMLE_lin_cir(syn_chr, 50, essential, circular=False, CEN=[2], probability=[0,2,2,1]))
-    plot_LU_CN(CHR_list, Plot="boxplot")      #"histogram", "boxplot", "violinplot"
-    plot_LU_CN(CHR_list, Plot="histogram")      #"histogram", "boxplot", "violinplot"

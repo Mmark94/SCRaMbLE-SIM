@@ -1,0 +1,1 @@
+This repository is for python scripts to simulate SCRaMbLE evolution and simulated long sequencing reads.
