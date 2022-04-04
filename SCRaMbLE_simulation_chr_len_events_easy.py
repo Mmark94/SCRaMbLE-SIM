@@ -4,6 +4,7 @@ from comparison_sol import NG50_calculator
 from SCRaMbLE_simulation_chr_len_events_store2 import plot_chr_len
 from work_parallel_functions import sum_within_list
 from work_parallel_functions import standard_deviation_from_points_parallel
+#from Mapping_coverage_MM import calculate_LU_CN_percentage
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -18,6 +19,10 @@ def SCRaMbLE_SIM_length(syn_chr, events=15, simulations=100, essential=[], CEN=[
     chr_len_SD = [0]    # The first value is always 0
     L_unique_SD = [0]
     LG50_SD = [0]
+    # Percentiles or Quartiles.
+    chr_len_Q1 = []
+    chr_len_Q2 = []   # Median
+    chr_len_Q3 = []
 
     for s in range(simulations):
         print(s)
@@ -38,13 +43,17 @@ def SCRaMbLE_SIM_length(syn_chr, events=15, simulations=100, essential=[], CEN=[
         chr_len_SD.append(statistics.stdev(CHR_L))
         L_unique_SD.append(statistics.stdev(unique_L))
         LG50_SD.append(statistics.stdev(LG50_L))
+        chr_len_Q1.append(np.percentile(CHR_L, 25))
+        chr_len_Q2.append(np.percentile(CHR_L, 50))
+        chr_len_Q3.append(np.percentile(CHR_L, 75))
     #print("chr_len =", len(chr_len), chr_len)
     #print("L_unique =", L_unique)
     #print("LG50 =", LG50)
     #print("chr_len_SD =", len(chr_len_SD), chr_len_SD)
     #print("L_unique_SD =", L_unique_SD)
     #print("LG50_SD =", LG50_SD)
-    return chr_len, L_unique, LG50, chr_len_SD, L_unique_SD, LG50_SD
+    #print("chr_len_Q1 =", chr_len_Q1)
+    return chr_len, L_unique, LG50, chr_len_SD, L_unique_SD, LG50_SD, chr_len_Q1, chr_len_Q2, chr_len_Q3
 
 def plot_SCRaMbLE_chr_len(syn_chr, events=15, simulations=100, essential=[], CEN=[], circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], file_name="", SD=False):
     # SCRaMbLE the chromosome and generate chr_len, L_unique, LG50
@@ -52,6 +61,7 @@ def plot_SCRaMbLE_chr_len(syn_chr, events=15, simulations=100, essential=[], CEN
     chr_len = S[0]
     L_unique = S[1]
     LG50 = S[2]
+    chr_len_Q1, chr_len_Q2, chr_len_Q3 = S[6], S[7], S[8]
     if SD == True:
         chr_len_SD = S[3]
         L_unique_SD = S[4]
@@ -201,8 +211,9 @@ def chr_len_range_SCRaMbLE(events=15, simulations=100, essential=[], CEN=[], cir
     for i in probability:
         probability_str = probability_str + str(i)
 
-    plt.savefig("SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed + ".png", dpi=200)
-    plt.savefig("SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed + ".svg", format="svg", dpi=200)
+    file_name = "SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed
+    plt.savefig(file_name + ".png", dpi=200)
+    plt.savefig(file_name + ".svg", format="svg", dpi=200)
     plt.show()
     plt.close()
     return None
@@ -267,9 +278,9 @@ def chr_len_essential_range_SCRaMbLE(syn_chr=50, events=15, simulations=100, CEN
     probability_str = ""  # record the probabilities of each event
     for i in probability:
         probability_str = probability_str + str(i)
-
-    plt.savefig("SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed + ".png", dpi=200)
-    plt.savefig("SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed + ".svg", format="svg", dpi=200)
+    file_name = "SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed
+    plt.savefig(file_name + ".png", dpi=200)
+    plt.savefig(file_name + ".svg", format="svg", dpi=200)
     plt.show()
     plt.close()
     return None
@@ -329,9 +340,9 @@ def chr_len_probabilities_range_SCRaMbLE(syn_chr=50, events=15, simulations=100,
     probability_str = ""  # record the probabilities of each event
     for i in probability:
         probability_str = probability_str + str(i)
-
-    plt.savefig("SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed + ".png", dpi=200)
-    plt.savefig("SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed + ".svg", format="svg", dpi=200)
+    file_name = "SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed
+    plt.savefig(file_name + ".png", dpi=200)
+    plt.savefig(file_name + ".svg", format="svg", dpi=200)
     plt.show()
     plt.close()
     return None
@@ -345,7 +356,7 @@ if __name__ == "__main__":
     #essential = sorted(random.sample(syn_chr, k=num_essential))
     CEN = [2]
     events = 1000
-    simulations = 200
+    simulations = 50
 
     plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=True, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], SD=True)
 

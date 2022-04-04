@@ -32,18 +32,18 @@ def DNA_extraction_any_L(syn_chr, coverage):
 #print(DNA_extraction_any_L(SCRaMbLEd_chr , 20))
 
 # I should create a function for DNA extraction of circular chromosomes
-def DNA_extraction(syn_chr, reads, mu=8, sigma=3, circular=False):
+def DNA_extraction(syn_chr, reads, mu=8, sigma=3, circular=False, Prev=0.3):
     DNA_fragments = []
-    if len(syn_chr)<4:
+    if len(syn_chr) < 4:
         return [syn_chr]
-    T=0
+    T = 0
     while T < reads:
         pos1 = random.randrange(0, len(syn_chr))
         #pick a random number to decide the length of the fragment
         #R = random.choices(range(3, 10), [1, 2, 3, 4, 3, 2, 1], k=1)[0]
         R = int(random.gauss(mu, sigma))
-        if R<1:
-            R=1
+        if R < 1:
+            R = 1
         if random.random() > 0.5:
             pos2 = pos1 + R
         else:
@@ -75,9 +75,9 @@ def DNA_extraction(syn_chr, reads, mu=8, sigma=3, circular=False):
                 fragment = syn_chr[pos2:] + syn_chr[:pos1]
         else:
             fragment = syn_chr[pos1:pos2]
-        # This will invert the fragment with probability 30%
+        # This will invert the fragment with probability 30%. Prev=0.3
         P = random.random()
-        if P>0.3:
+        if P > Prev:
             DNA_fragments.append(fragment)
         else:
             DNA_fragments.append(invert(fragment))
@@ -90,13 +90,28 @@ def DNA_extraction(syn_chr, reads, mu=8, sigma=3, circular=False):
 #reads = DNA_extraction(A, 8, mu=8, sigma=3, circular=True)
 #print(reads)
 
-def DNA_extraction_coverage(syn_chr, coverage, reads_len=8, sigma=3, circular=False):
-    #The function firstly find out how many reads are necessary to have one fold coverage using the formula: NL/G=coverage   (N=number of reads, L=read length, G=genome size)
-    if len(syn_chr) <= reads_len:
-        reads_num = coverage
-    else:
-        reads_num = int(len(syn_chr) / reads_len)
-    DNA_fragments = DNA_extraction(syn_chr, reads_num * coverage, reads_len, sigma, circular)
+def DNA_extraction_coverage(syn_chr, coverage: int, reads_len=8, sigma=3, circular=False):
+    # The coverage input should be an integer.
+    coverage = int(coverage)
+    if syn_chr == []:
+        return syn_chr
+    if isinstance(syn_chr[0], int):  # One chromosome
+        #The function firstly find out how many reads are necessary to have one fold coverage using the formula: NL/G=coverage   (N=number of reads, L=read length, G=genome size)
+        if len(syn_chr) <= reads_len:
+            reads_num = coverage
+        else:
+            reads_num = int(len(syn_chr) / reads_len)
+        DNA_fragments = DNA_extraction(syn_chr=syn_chr, reads=reads_num * coverage, mu=reads_len, sigma=sigma, circular=circular)
+    else:  # there are multiple chromosomes
+        DNA_fragments = []
+        for Chr in syn_chr:
+            # The function firstly find out how many reads are necessary to have one fold coverage using the formula: NL/G=coverage   (N=number of reads, L=read length, G=genome size)
+            if len(Chr) <= reads_len:
+                reads_num = coverage
+            else:
+                reads_num = int(len(Chr) / reads_len)
+            DNA_fragments = DNA_fragments + (DNA_extraction(syn_chr=Chr, reads=reads_num * coverage, mu=reads_len, sigma=sigma, circular=circular))
+            #print("DNA_fragments =", DNA_fragments)
     return DNA_fragments
 
 

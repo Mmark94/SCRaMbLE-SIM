@@ -37,13 +37,15 @@ def SCRaMbLE_evolution_LU_count(syn_chr, SCRaMbLE_events, essential, CEN, circul
     counter_esse = 0
     counter_non_esse = 0
     for LU in syn_chr:
-        if abs(LU) in essential:
+        if abs(LU) in CEN:
+            ALL_colour[LU - 1] = [1., 1., 0., 1.]   # this is yellow
+        elif abs(LU) in essential:
             ALL_colour[LU - 1] = colors_esse[counter_esse]
             counter_esse += 1
         else:
             ALL_colour[LU - 1] = colors_non_esse[counter_non_esse]
             counter_non_esse += 1
-    # print(ALL_colour)
+    #print("ALL_colour =", ALL_colour)
 
     # Font size
     SMALL_SIZE = 16

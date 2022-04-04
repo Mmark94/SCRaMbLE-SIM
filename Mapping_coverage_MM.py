@@ -450,7 +450,7 @@ def SCRaMbLE_SIM_LU_CN(syn_chr, events=100, simulations=1000, essential=[], CEN=
         probability_str = probability_str + str(i)
     # Do the actual plotting
     for i in range(len(snapshots_SCRaMbLEd)):
-        filename = lin_cir + "_" + random_seed + "_sim" + str(simulations) + "_P" + probability_str + "_SE" + str(snapshots[i])
+        filename = lin_cir + "_chr_L" + str(len(syn_chr)) + "_" + random_seed + "_sim" + str(simulations) + "_P" + probability_str + "_SE" + str(snapshots[i])
         plot_LU_CN_percentage(snapshots_SCRaMbLEd[i], max_CN=max_CN, essential=essential, CEN=CEN, filename=filename, SE=str(snapshots[i]))
     return None
 
@@ -468,6 +468,11 @@ if __name__ == "__main__":
     essential = [2, 7, 9, 10, 12, 19, 20, 24]  # LUs 19 and 24 are not essential but required for fast growth. Deletion of LU 6 can also generate some slow growth phenotype.
 
     SCRaMbLE_SIM_LU_CN(syn_chr, events=100, simulations=1000, essential=essential, CEN=[2], circular=True, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], max_CN=5)
+
+    syn_chr = list(range(1, 101, 1))
+    essential = [50]
+    #SCRaMbLE_SIM_LU_CN(syn_chr, events=1000, simulations=500, essential=essential, CEN=[50], circular=True, mu=0,sigma=10, force=True, probability=[0, 2, 2, 2], max_CN=10)
+
     # I use the following website to create the giff: https://ezgif.com/maker
 
     """

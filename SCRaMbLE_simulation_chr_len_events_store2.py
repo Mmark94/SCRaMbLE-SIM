@@ -29,7 +29,10 @@ def plot_chr_len(SCRaMbLEd_events, chr_len, L_unique=[[]], LG50=[[]], num_essent
     for p in chr_len:
         all_points = all_points + p
     # Add the standard variation
-    MAX_values = max(all_points) + max(SD_chr_len)
+    Max_SD_chr_len = 0
+    if SD_chr_len != []:
+        Max_SD_chr_len = max(SD_chr_len)
+    MAX_values = max(all_points) + Max_SD_chr_len
 
     plt.ylim([0, MAX_values + 5])
     plt.ylabel("Chr length mean over " + str(simulations) + " simulations")
@@ -42,6 +45,8 @@ def plot_chr_len(SCRaMbLEd_events, chr_len, L_unique=[[]], LG50=[[]], num_essent
     #plt.boxplot(chr_len)   # Use this to create boxplots. However, this needs all the data not just the mean
     for i in range(len(chr_len)):
         plt.plot(SCRaMbLEd_events, chr_len[i], color="tab:blue")
+        #plt.fill_between(SCRaMbLEd_events, chr_len[i] - SD_chr_len[i], chr_len[i] + SD_chr_len[i])
+        #plt.fill_between(SCRaMbLEd_events, chr_len[i], SD_chr_len)
         if SD_chr_len != []:
             plt.errorbar(SCRaMbLEd_events, chr_len[i], yerr=SD_chr_len, elinewidth=0.1)
         if L_unique != [[]]:
@@ -67,9 +72,9 @@ def plot_chr_len(SCRaMbLEd_events, chr_len, L_unique=[[]], LG50=[[]], num_essent
     probability_str = ""    # record the probabilities of each event
     for i in probability:
         probability_str = probability_str + str(i)
-
-    plt.savefig("SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed + ".png", dpi=200)
-    plt.savefig("SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed + ".svg", format="svg", dpi=200)
+    file_name1 = "SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed
+    plt.savefig(file_name1 + ".png", dpi=200)
+    plt.savefig(file_name1 + ".svg", format="svg", dpi=200)
     plt.show()
     plt.close()
     return None

@@ -94,6 +94,8 @@ def duplication_circular(pos1, pos2, syn_chr, CEN=[]):
 
 
 def SCRaMbLE4_circular(syn_chr, Number_events, essential=[], mu=0, sigma=10, CEN=[], probability=[3, 2, 2, 1]):
+    if len(syn_chr) < 2:
+        return syn_chr
     # Add the Centromere to the essential LU
     for LU in CEN:
         if LU not in essential:

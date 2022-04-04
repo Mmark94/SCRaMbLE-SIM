@@ -12,6 +12,16 @@ def LoxP_unit_count_list(Path, list_unit):
         LP_unit_count = LP_unit_count + Path.count(unit) + Path.count(-unit)
     return LP_unit_count
 
+# This function was copied from comparison_sol.py
+def invert(x):
+    inv_x=[]
+    for element in x:
+        if isinstance(element, int):
+            inv_x.insert(0,-element)
+        else:
+            inv_x.insert(0,element)
+    return inv_x
+
 def deletion(pos1, pos2, syn_chr):
     if pos1 > pos2:
         temp=pos1
@@ -32,7 +42,7 @@ def deletion_essential0(pos1, pos2, syn_chr, essential=[]):
     # It check if all the essential fragments are in the synthetic chromosome after the deletion happen. If there are not, it will output the original chr.
     new_chr_abs = [abs(ele) for ele in new_chr]
     T2 = all(elem in new_chr_abs for elem in essential)
-    if T2 == False and T1 == True and essential != []:
+    if T2 is False and T1 is True and essential != []:
         return syn_chr
     else:
         return new_chr
@@ -55,14 +65,12 @@ def deletion_essential(pos1, pos2, syn_chr, essential=[]):
     # It check if all the essential fragments are in the synthetic chromosome after the deletion happened. If there are not, it will output the original chr.
     new_chr_abs = [abs(ele) for ele in new_chr]
     T = all(elem in new_chr_abs for elem in new_essential)
-    if T == False:
+    if T is False:
         return syn_chr
     else:
         return new_chr
 
-#A = [1,2,3,4,5,6]
-#print(deletion_essential(0,3,A, [3,4,7]))
-#print(deletion(3,0,A))
+# Synthetic lethal interactions
 
 
 def inversion(pos1, pos2, syn_chr):
@@ -70,13 +78,7 @@ def inversion(pos1, pos2, syn_chr):
         temp=pos1
         pos1=pos2
         pos2=temp
-    inv_seq1 = syn_chr[pos1:pos2]
-    inv_seq2 = []
-    for loxP_f in inv_seq1:
-        inv_seq2.insert(0, -loxP_f)
-    return syn_chr[:pos1] + inv_seq2 + syn_chr[pos2:]
-
-#print(inversion(5,2,syn_chr))
+    return syn_chr[:pos1] + invert(syn_chr[pos1:pos2]) + syn_chr[pos2:]
 
 
 def duplication(pos1, pos2, syn_chr, CEN=[]):
@@ -90,7 +92,26 @@ def duplication(pos1, pos2, syn_chr, CEN=[]):
     else:
         return new_chr
 
+# When duplications happen they could be tandem duplication or inverted duplication.
+def inverted_duplication(pos1, pos2, syn_chr, CEN=[]):
+    if pos1 > pos2:
+        temp=pos1
+        pos1=pos2
+        pos2=temp
+    new_chr = syn_chr[:pos1] + syn_chr[pos1:pos2] + invert(syn_chr[pos1:pos2]) + syn_chr[pos2:]
+    if LoxP_unit_count_list(new_chr, CEN) > 1:
+        return syn_chr
+    else:
+        return new_chr
 
+#A = [1,2,3,4,5,6]
+#print(deletion_essential(0,3,A, [3,4,7]))
+#print(deletion(3,0,A))
+#print(inversion(3,0,A))
+#print(inverted_duplication(3, 0, A))
+
+# This is a reciprocal translocation. This means that no LUs are lost.
+# However, it might happen that the centromere is translocated. In this case, there might be a chromosome with 0 or 2 centromeres (not viable).
 def translocation(chr1, chr2):
     if len(chr1) <= 1 or len(chr2) <= 1:
         return [chr1, chr2]
@@ -352,42 +373,50 @@ def SCRaMbLE4_lin_cir(syn_chr, Number_events, essential=[], circular=False, mu=7
         return SCRaMbLE4(syn_chr, Number_events, essential, mu, sigma, CEN=CEN, probability=probability)
 
 
-def SCRaMbLE_muliple_chrs(list_chr: list, essential=[], circular=False, mu=0, sigma=7, CEN=[], force=True, probability=[0, 2, 2, 1]):
-    Number_events = 1
+# This function can SCRaMbLE multiple chromosomes. The input is a list of chromosomes. The probability of SCRaMbLE in one chromosome is proportional with its length and there is a small probabiity of translocation (Ptra=0.05).
+def SCRaMbLE_muliple_chrs(list_chr: list, Number_events=1, essential=[], circular=False, mu=0, sigma=7, CEN=[], force=True, probability=[0, 2, 2, 1], Ptra=0.05):
+    #Number_events = 1
     if isinstance(list_chr[0], list):       # There are multiple chromosomes
         new_chr = list_chr[:]
-        # find the length of all the chr
+        # Name each chromosome starting from 0, 1, 2, ...
         list_chr_name = list(range(len(list_chr)))
-        list_chr_len = []
-        chr_len = 0
-        for chr in list_chr:
-            chr_len = chr_len + len(chr)
-            list_chr_len.append(len(chr))
+        # Find the length of all the chromosomes
+        list_chr_len = [len(x) for x in list_chr]
+        # Decide where the SCRaMbLE event should happen. More the chr is long more is the likelihood to be chosen.
+        chr_events = random.choices(list_chr_name, list_chr_len, k=Number_events)
+        #print("list_chr_name =", list_chr_name)
         #print("list_chr_len =", list_chr_len)
-        # decide where the SCRaMbLE event appear. More the chr is long more is the likelihood to be chosen.
-        first_event = random.choices(list_chr_name, list_chr_len, k=1)[0]
-        # decide if the SCRaMbLE event is intra_chr or inter_chr (translocation). The translocations have a probability of 5% to happen.
-        if random.random() < 0.05:
-            #print("Translocation")
-            # remove the first chr from the list and chose the second chr for the translocation
-            list_chr_name.pop(first_event)
-            list_chr_len.pop(first_event)
-            second_event = random.choices(list_chr_name, list_chr_len, k=1)[0]
-            # generate the translocation between the two chromosomes chosen
-            translocated_chr = translocation(new_chr[first_event], new_chr[second_event])
-            # If the centromere list is not provided, do nothing
-            if CEN == []:
-                new_chr[first_event] = translocated_chr[0]
-                new_chr[second_event] = translocated_chr[1]
+        #print("chr_events =", chr_events)
+        for i in range(Number_events):
+            #print(i)
+            # Decide if the SCRaMbLE event is intra_chr or inter_chr (translocation). The translocations have a probability of 5% to happen.
+            if random.random() < Ptra:
+                #print("Translocation")
+                # Keep looping until the second translocated chromosome is different from the first. Maximum for 10 iterations.
+                for _ in range(10):
+                    second_tra_chr = random.choices(list_chr_name, list_chr_len, k=1)[0]
+                    if second_tra_chr != chr_events[i]:
+                        break
+                if second_tra_chr == chr_events[i]:
+                    print("Null SCRaMbLE event because of translocation. Could not chose the chromosomes.")
+                    continue
+                # Generate the translocation between the two chromosomes chosen
+                translocated_chr = translocation(new_chr[chr_events[i]], new_chr[second_tra_chr])
+                # If the centromere list is not provided, do nothing
+                if CEN == []:
+                    new_chr[chr_events[i]] = translocated_chr[0]
+                    new_chr[second_tra_chr] = translocated_chr[1]
+                else:
+                    # Check if the translocated chromosomes have 1 and only 1 CEN. If they have 0 or 2 or more CEN, the program will discard the translocation.
+                    CEN_chr1 = LoxP_unit_count_list(Path=translocated_chr[0], list_unit=CEN)
+                    CEN_chr2 = LoxP_unit_count_list(Path=translocated_chr[1], list_unit=CEN)
+                    if CEN_chr1 == 1 and CEN_chr2 == 1:
+                        new_chr[chr_events[i]] = translocated_chr[0]
+                        new_chr[second_tra_chr] = translocated_chr[1]
+                    else:
+                        print("Null SCRaMbLE event because of translocation. Number of centromeres for chromosome =", CEN_chr1, CEN_chr2)
             else:
-                # check if the translocated chromosomes have 1 and only 1 CEN. If they have 0 or 2 or more CEN, the program will discard the translocation.
-                CEN_chr1 = LoxP_unit_count_list(translocated_chr[0], CEN)
-                CEN_chr2 = LoxP_unit_count_list(translocated_chr[1], CEN)
-                if CEN_chr1 == 1 and CEN_chr2 == 1:
-                    new_chr[first_event] = translocated_chr[0]
-                    new_chr[second_event] = translocated_chr[1]
-        else:
-            new_chr[first_event] = force_SCRaMLE_lin_cir(new_chr[first_event], Number_events, essential=essential, circular=circular, mu=mu, sigma=sigma, CEN=CEN, force=force, probability=probability)
+                new_chr[chr_events[i]] = force_SCRaMLE_lin_cir(new_chr[chr_events[i]], Number_events, essential=essential, circular=circular, mu=mu, sigma=sigma, CEN=CEN, force=force, probability=probability)
         return new_chr
     else:
         return force_SCRaMLE_lin_cir(list_chr, Number_events, essential=essential, circular=circular, mu=mu, sigma=sigma, CEN=CEN, force=force, probability=probability)
