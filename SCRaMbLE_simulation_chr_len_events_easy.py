@@ -1,6 +1,8 @@
 from SCRaMbLE_simulation_3 import force_SCRaMLE_lin_cir
+from SCRaMbLE_simulation_3 import force_SCRaMLE_lin_cir_events
 from comparison_sol import LoxP_unit_count_Dict_list
 from comparison_sol import NG50_calculator
+from comparison_sol import essential_ratio_calculator
 from SCRaMbLE_simulation_chr_len_events_store2 import plot_chr_len
 from work_parallel_functions import sum_within_list
 from work_parallel_functions import standard_deviation_from_points_parallel
@@ -24,17 +26,26 @@ def SCRaMbLE_SIM_length(syn_chr, events=15, simulations=100, essential=[], CEN=[
     chr_len_Q2 = []   # Median
     chr_len_Q3 = []
 
+    # Count the events type
+    Events = [[] for _ in range(simulations)]
+    # Calculate the ratio of essential LUs
+    essential_ratio = [[] for _ in range(simulations)]
+
     for s in range(simulations):
         print(s)
         SCRaMbLEd = syn_chr[:]
         for _ in range(events):
             # Perform SCRaMbLE on the synthetic chromosome
-            SCRaMbLEd = force_SCRaMLE_lin_cir(SCRaMbLEd, 1, essential=essential, circular=circular, mu=mu, sigma=sigma, CEN=CEN, force=force, probability=probability)
+            #SCRaMbLEd = force_SCRaMLE_lin_cir(SCRaMbLEd, Number_events=1, essential=essential, circular=circular, mu=mu, sigma=sigma, CEN=CEN, force=force, probability=probability)
+            chr_events = force_SCRaMLE_lin_cir_events(SCRaMbLEd, Number_events=1, essential=essential, circular=circular, mu=mu, sigma=sigma, CEN=CEN, force=force, probability=probability, event_type=True)
+            SCRaMbLEd = chr_events[0]
+            Events[s].append(chr_events[1][0])
             # Get some statistics about the SCRaMbLEd chromosome
             NG50 = NG50_calculator(SCRaMbLEd)
             chr_len[s].append(len(SCRaMbLEd))
             L_unique[s].append(NG50[1])
             LG50[s].append(NG50[3])
+            essential_ratio[s].append(essential_ratio_calculator(chromosome=SCRaMbLEd, essential=essential))
     # Calculate the standard deviation
     for s in range(events):
         CHR_L = [sim_L[s] for sim_L in chr_len]
@@ -53,7 +64,8 @@ def SCRaMbLE_SIM_length(syn_chr, events=15, simulations=100, essential=[], CEN=[
     #print("L_unique_SD =", L_unique_SD)
     #print("LG50_SD =", LG50_SD)
     #print("chr_len_Q1 =", chr_len_Q1)
-    return chr_len, L_unique, LG50, chr_len_SD, L_unique_SD, LG50_SD, chr_len_Q1, chr_len_Q2, chr_len_Q3
+    #print("Events =", Events)
+    return chr_len, L_unique, LG50, chr_len_SD, L_unique_SD, LG50_SD, chr_len_Q1, chr_len_Q2, chr_len_Q3, Events, essential_ratio
 
 def plot_SCRaMbLE_chr_len(syn_chr, events=15, simulations=100, essential=[], CEN=[], circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], file_name="", SD=False):
     # SCRaMbLE the chromosome and generate chr_len, L_unique, LG50
@@ -62,6 +74,27 @@ def plot_SCRaMbLE_chr_len(syn_chr, events=15, simulations=100, essential=[], CEN
     L_unique = S[1]
     LG50 = S[2]
     chr_len_Q1, chr_len_Q2, chr_len_Q3 = S[6], S[7], S[8]
+
+    # Count SCRaMbLE events types
+    Events = S[9]
+    DELs = [0 for _ in range(events)]
+    INVs = [0 for _ in range(events)]
+    DUPs = [0 for _ in range(events)]
+    for Sim in Events:
+        for E in range(len(Sim)):
+            if Sim[E] == "DEL":
+                DELs[E] += 1
+            if Sim[E] == "INV":
+                INVs[E] += 1
+            if Sim[E] == "DUP":
+                DUPs[E] += 1
+    # Convert the number of SEs into percentages
+    DELs = [e/simulations for e in DELs]
+    INVs = [e/simulations for e in INVs]
+    DUPs = [e/simulations for e in DUPs]
+    # Calculate the ratio of essential LUs
+    essential_ratio = S[10]
+
     if SD == True:
         chr_len_SD = S[3]
         L_unique_SD = S[4]
@@ -81,23 +114,55 @@ def plot_SCRaMbLE_chr_len(syn_chr, events=15, simulations=100, essential=[], CEN
     chr_len_L = sum_within_list(chr_len)
     L_unique_L = sum_within_list(L_unique)
     LG50_L = sum_within_list(LG50)
+    essential_ratio_L = sum_within_list(essential_ratio)
 
     # Add the first value
     NG50 = NG50_calculator(syn_chr)
     chr_len_L.insert(0, len(syn_chr)*simulations)
     L_unique_L.insert(0, NG50[0]*simulations)
     LG50_L.insert(0, NG50[3]*simulations)
+    #essential_ratio_L.insert(0, 0.5*simulations)
 
     # Divide for the number of simulations. You can use also the function divide_by_sim in work_parallel_functions
     chr_len_L = [x / simulations for x in chr_len_L]
     L_unique_L = [x / simulations for x in L_unique_L]
     LG50_L = [x / simulations for x in LG50_L]
+    essential_ratio_L = [x / simulations for x in essential_ratio_L]
     #print("chr_len_L =", chr_len_L)
     #print("L_unique_L =", L_unique_L)
     #print("LG50_L =", LG50_L)
+    #print("DELs =", DELs)
+    #print("INVs =", INVs)
+    #print("DUPs =", DUPs)
 
     # Plot the results
     plot_chr_len(SCRaMbLEd_events, chr_len_L, L_unique=L_unique_L, LG50=LG50_L, num_essential=len(essential), simulations=simulations, circular=circular, probability=probability, file_name=file_name, SD_chr_len=chr_len_SD, SD_L_unique=L_unique_SD, SD_LG50=LG50_SD)
+    # plot the frequencies of the SCRaMbLE events types
+    plt.figure(figsize=(18, 9))
+    #print(len(SCRaMbLEd_events), len(DELs))
+    plt.plot(SCRaMbLEd_events[1:], DELs, label="DELs")
+    plt.plot(SCRaMbLEd_events[1:], INVs, label="INVs")
+    plt.plot(SCRaMbLEd_events[1:], DUPs, label="DUPs")
+    plt.plot(SCRaMbLEd_events[1:], essential_ratio_L, label="essential ratio")
+    plt.ylabel("Percentage of event type over " + str(simulations) + " simulations")
+    plt.xlabel("SCRaMbLEd events")
+    plt.title("Frequencies of SCRaMbLE event types")
+    plt.legend()
+    # These are some information to add to the saved files.
+    # Create a random seed to save the image
+    random_seed = str(random.random())[2:6]
+    if circular:    # record if the chromosome is linear or circular
+        lin_cir = "c"
+    else:
+        lin_cir = "l"
+    probability_str = ""    # record the probabilities of each event
+    for i in probability:
+        probability_str = probability_str + str(i)
+    file_name1 = "SCRaMbLE_chr_len/SCRaMbLE_events_types_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed
+    plt.savefig(file_name1 + ".png", dpi=200)
+    plt.savefig(file_name1 + ".svg", format="svg", dpi=200)
+    plt.show()
+    plt.close()
     return None
 
 # I split the function plot_SCRaMbLE_chr_len in two pieces
@@ -285,7 +350,7 @@ def chr_len_essential_range_SCRaMbLE(syn_chr=50, events=15, simulations=100, CEN
     plt.close()
     return None
 
-def chr_len_probabilities_range_SCRaMbLE(syn_chr=50, events=15, simulations=100, essential=[], CEN=[], circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], file_name=""):
+def chr_len_probabilities_range_SCRaMbLE(syn_chr=50, events=15, simulations=100, essential=[], CEN=[], circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], file_name="", LOG=True):
 
     probabilities_range = [[0,4,4,1], [0,4,4,2], [0,4,4,4], [0,4,4,8], [0,4,4,16]]
 
@@ -340,7 +405,11 @@ def chr_len_probabilities_range_SCRaMbLE(syn_chr=50, events=15, simulations=100,
     probability_str = ""  # record the probabilities of each event
     for i in probability:
         probability_str = probability_str + str(i)
-    file_name = "SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed
+    log_id = ""
+    if LOG:
+        plt.yscale('log')
+        log_id = "_log"
+    file_name = "SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed + log_id
     plt.savefig(file_name + ".png", dpi=200)
     plt.savefig(file_name + ".svg", format="svg", dpi=200)
     plt.show()
@@ -356,9 +425,12 @@ if __name__ == "__main__":
     #essential = sorted(random.sample(syn_chr, k=num_essential))
     CEN = [2]
     events = 1000
-    simulations = 50
+    simulations = 100
 
-    plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=True, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], SD=True)
+    #plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], SD=True)
+    syn_chr = list(range(1, 100, 1))
+    events = 500
+    plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=False, mu=0, sigma=10, force=True, probability=[0, 4, 4, 1], SD=True)
 
     #plot_mean_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1])
 
@@ -378,4 +450,4 @@ if __name__ == "__main__":
     events = 250
     simulations = 50
     essential = sorted(random.sample(syn_chr, k=num_essential))
-    #chr_len_probabilities_range_SCRaMbLE(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=False, mu=0, sigma=10, force=True)
+    #chr_len_probabilities_range_SCRaMbLE(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=False, mu=0, sigma=10, force=True, LOG=True)

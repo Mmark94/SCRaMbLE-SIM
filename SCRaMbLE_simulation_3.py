@@ -207,7 +207,7 @@ def SCRaMbLE3(syn_chr, Number_events, mu=7, sigma=7):
         #print(new_chr)
     return new_chr
 
-def SCRaMbLE4(syn_chr, Number_events, essential=[], mu=0, sigma=10, CEN=[], probability=[3, 2, 2, 1]):
+def SCRaMbLE4(syn_chr, Number_events, essential=[], mu=0, sigma=10, CEN=[], probability=[3, 2, 2, 1], event_type=False):
     if len(syn_chr) <= 1:
         return syn_chr
     # Add the Centromere to the essential LU
@@ -265,6 +265,8 @@ def SCRaMbLE4(syn_chr, Number_events, essential=[], mu=0, sigma=10, CEN=[], prob
             new_chr = duplication(pos1, pos2, new_chr, CEN)
         #print(event, "between LoxP:", pos1, "and LoxP:", pos2)
         #print(new_chr)
+    if event_type:
+        return new_chr, events
     return new_chr
 
 # Plot the SCRaMbLE events length. This should follow a "discretized half normal distribution"
@@ -352,6 +354,39 @@ def force_SCRaMLE_lin_cir(syn_chr: list, Number_events: int, essential=[], circu
                 new_chr2 = SCRaMbLE4(new_chr1, 1, essential=essential, mu=mu, sigma=sigma, CEN=CEN, probability=probability)
             counter = counter + 1
         #print(new_chr2)
+    return new_chr2
+
+# This records also the event type
+def force_SCRaMLE_lin_cir_events(syn_chr: list, Number_events: int, essential=[], circular=False, mu=0, sigma=7, CEN=[], force=True, probability=[0, 2, 2, 1], event_type=False):
+    if not(force):
+        if circular:
+            return SCRaMbLE4_circular(syn_chr=syn_chr, Number_events=Number_events, essential=essential, mu=mu, sigma=sigma, CEN=CEN, probability=probability)
+        else:
+            return SCRaMbLE4(syn_chr=syn_chr, Number_events=Number_events, essential=essential, mu=mu, sigma=sigma, CEN=CEN, probability=probability)
+    new_chr2 = syn_chr[:]
+    Events = []
+    for _ in range(Number_events):
+        new_chr1 = new_chr2[:]
+        counter = 0         # the counter make sure the program do not get stuck and loop infinite times.
+        while new_chr1 == new_chr2 and counter < 20:
+            if event_type:
+                if circular:
+                    chr_temp = SCRaMbLE4_circular(new_chr1, 1, essential=essential, mu=mu, sigma=sigma, CEN=CEN, probability=probability, event_type=True)
+                else:
+                    chr_temp = SCRaMbLE4(new_chr1, 1, essential=essential, mu=mu, sigma=sigma, CEN=CEN, probability=probability, event_type=True)
+                new_chr2 = chr_temp[0]
+                if new_chr1 != new_chr2:
+                    Events.append(chr_temp[1][0])
+            else:
+                if circular:
+                    new_chr2 = SCRaMbLE4_circular(new_chr1, 1, essential=essential, mu=mu, sigma=sigma, CEN=CEN, probability=probability)
+                else:
+                    new_chr2 = SCRaMbLE4(new_chr1, 1, essential=essential, mu=mu, sigma=sigma, CEN=CEN, probability=probability)
+            counter = counter + 1
+        #print(new_chr2)
+    if event_type:
+        #print("Events =", len(Events), Events)
+        return new_chr2, Events
     return new_chr2
 
 #syn_chr = list(range(1, 45, 1))
@@ -454,6 +489,7 @@ if __name__ == "__main__":
         print(SCRaMbLE4_lin_cir(syn_chr, 10, essential, False, probability=[2,1,1,2]))
         print(SCRaMbLE4_lin_cir(syn_chr, 10, essential, True, probability=[2,1,1,2]))
         print(force_SCRaMLE_lin_cir(syn_chr, 10, essential, False, probability=[2,1,1,2]))
+        print(force_SCRaMLE_lin_cir_events(syn_chr, 10, essential, False, probability=[2, 1, 1, 2], event_type=True))
         print()
 
-    plot_events_length()
+    #plot_events_length()

@@ -93,7 +93,7 @@ def duplication_circular(pos1, pos2, syn_chr, CEN=[]):
 
 
 
-def SCRaMbLE4_circular(syn_chr, Number_events, essential=[], mu=0, sigma=10, CEN=[], probability=[3, 2, 2, 1]):
+def SCRaMbLE4_circular(syn_chr, Number_events, essential=[], mu=0, sigma=10, CEN=[], probability=[3, 2, 2, 1], event_type=False):
     if len(syn_chr) < 2:
         return syn_chr
     # Add the Centromere to the essential LU
@@ -151,6 +151,8 @@ def SCRaMbLE4_circular(syn_chr, Number_events, essential=[], mu=0, sigma=10, CEN
             new_chr = duplication_circular(pos1, pos2, new_chr, CEN=CEN)
         # print(event, "between LoxP:", pos1, "and LoxP:", pos2)
         # print(new_chr)
+    if event_type:
+        return new_chr, events
     return new_chr
 
 # test the code

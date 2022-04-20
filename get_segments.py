@@ -5,9 +5,10 @@ from Bio.SeqRecord import SeqRecord
 import sys
 import argparse
 import pandas as pd
+import random
 
 # Cuts the reference genome in segments of the same size. If you have some mapping_breakpoints the program will be force to cut here as well.
-def cut_reference_in_segments(filename="IXR_BACnewseq.fa", ID="", starting_LU=1, segment_size=1000, min_segment_size=100, mapping_breakpoints={}):
+def cut_reference_in_segments(filename="IXR_BACnewseq.fa", ID="", starting_LU=1, segment_size=1000, min_segment_size=100, mapping_breakpoints={}, RANDOM=False, random_cuts=100):
     if ID == "":
         # Take the name before the dot. find() finds the first occurrence. rfind() finds the last occurrence.
         ID = filename[:filename.rfind(".")]
@@ -35,6 +36,9 @@ def cut_reference_in_segments(filename="IXR_BACnewseq.fa", ID="", starting_LU=1,
                         pos_loxP.pop(index + 1)
                     if distance1 < min_segment_size:
                         pos_loxP.pop(index - 1)
+            if RANDOM:
+                # Choose at random the points where to cut. The number of cuts is decided with the variable random_cuts.
+                pos_loxP = sorted(random.sample(range(1, record_len, 1), k=random_cuts))
             print("pos_loxP =", list(pos_loxP))
             # Loop through the loxP site positions and store the LU start, end position and its size
             start_LU = 0
@@ -105,6 +109,7 @@ if __name__ == '__main__':
     # IXR_BACnewseq_test.fa has two synIXR chromosomes
     #cut_reference_in_segments(filename="IXR_BACnewseq_test.fa", segment_size=3000, min_segment_size=500)
     #cut_reference_in_segments(filename="SynIII-KC880027.1.fasta")
+    #print(sorted(random.sample(range(1, 100000, 1), k=100)))
 
     parser = argparse.ArgumentParser(description="Cut the reference chromosomes in segments of a define length.")
     # metavar=""

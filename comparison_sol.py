@@ -812,6 +812,16 @@ def NG50_calculator(Chr):
 #Chr_a = NG50_calculator(Chr)
 #print(Chr_a)
 
+def essential_ratio_calculator(chromosome: int, essential=[]):
+    essential = [abs(x) for x in essential]
+    chr_L = len(chromosome)
+    num_essential = 0
+    # Count the number of essential LUs
+    for LU in chromosome:
+        if abs(LU) in essential:
+            num_essential += 1
+    return num_essential / chr_L
+
 # This function calculate the base pairs length of path/solution or subpaths.
 def solution_to_bps_size(solution: list):
     if solution == [] or solution == [[]]:
