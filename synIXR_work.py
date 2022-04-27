@@ -11,7 +11,7 @@ from Mapping_coverage_MM import plot_LU_CN_percentage
 ALL_sol = pd.read_excel("synIXR_solutions_ALL2.xlsx", engine="openpyxl")
 print(ALL_sol.head())
 
-# In synIXR_solutions_ALL2.xlsx I removed strain JS603 because its has two synIXR. I also manipulated strain JS606 to fit the eccDNA inside the synIXR.
+# In synIXR_solutions_ALL2.xlsx I removed strain JS603 because it has two synIXR. I also manipulated strain JS606 to fit the eccDNA inside the synIXR.
 
 ID = list(ALL_sol["ID"])
 solution = list(ALL_sol["solution"])
@@ -23,9 +23,9 @@ essential = [2, 7, 9, 10, 12, 19, 20, 24]   # LUs 19 and 24 are not essential bu
 # Note, very important!
 # LU 14 contains MET28 and LU 32 contains LYS1. After SCRaMbLE 33 strains were selected to be -LYS, 20 to be -MET and 10 to be -LYS -MET.
 
-plot_LU_CN(solution, Plot="boxplot", essential=essential, CEN=[2])  # "histogram", "boxplot", "violinplot"
+#plot_LU_CN(solution, Plot="boxplot", essential=essential, CEN=[2])  # "histogram", "boxplot", "violinplot"
 #plot_LU_CN(solution, Plot="histogram", essential=essential, CEN=[2])      #"histogram", "boxplot", "violinplot"
 #plot_LU_CN(solution, Plot="violinplot", essential=essential, CEN=[2])      #"histogram", "boxplot", "violinplot"
-plot_LU_CN_percentage(solution, max_CN=5, essential=essential, CEN=[2])
-plot_LU_CN_percentage(solution, max_CN=10, essential=essential, CEN=[2])
+plot_LU_CN_percentage(solution, max_CN=5, essential=essential, CEN=[2], filename="synIXR", SE="")    # SE="6.2"
+#plot_LU_CN_percentage(solution, max_CN=10, essential=essential, CEN=[2])
 

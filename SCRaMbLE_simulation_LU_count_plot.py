@@ -48,23 +48,23 @@ def SCRaMbLE_evolution_LU_count(syn_chr, SCRaMbLE_events, essential, CEN, circul
     #print("ALL_colour =", ALL_colour)
 
     # Font size
-    SMALL_SIZE = 16
-    MEDIUM_SIZE = 20
-    BIGGER_SIZE = 24
+    SMALL_SIZE = 8
+    MEDIUM_SIZE = 10
+    BIGGER_SIZE = 12
     plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
     plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
     plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
     plt.rc('xtick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
     plt.rc('ytick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
-    plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
+    plt.rc('legend', fontsize=3)  # legend fontsize
     plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
     # Start creating the plot
-    fig, ax = plt.subplots(figsize=(20, 10))
+    fig, ax = plt.subplots(figsize=(7, 3.5), dpi=300)
 
     SCRaMbLEd_events_list = list(range(0, SCRaMbLE_events + 1))
     ax.stackplot(SCRaMbLEd_events_list, LU_count_time.values(), labels=LU_count_time.keys(), colors=ALL_colour)
-    ax.legend(loc='upper left', prop={'size': 8})
+    ax.legend(loc='upper left', prop={'size': 3})
     ax.set_title('LoxP Units Evolution')
     ax.set_xlabel('SCRaMbLEd_events')
     ax.set_ylabel('Number of LoxP Units')
@@ -82,9 +82,10 @@ def SCRaMbLE_evolution_LU_count(syn_chr, SCRaMbLE_events, essential, CEN, circul
         probability_str = probability_str + str(i)
     filename = "SCRaMbLE_evolution_LU/SCRaMbLE_evolution_LU_count_chr_" + lin_cir + "_L" + str(len(syn_chr)) + "_Ev" + str(SCRaMbLE_events) + "_P" + probability_str + "_s" + random_seed
     print("# " + filename)
-    plt.savefig(filename + ".png", dpi=200)
-    plt.savefig(filename + ".svg", format="svg", dpi=200)
+    plt.savefig(filename + ".png", dpi=300, bbox_inches='tight')
+    plt.savefig(filename + ".svg", format="svg", dpi=300, bbox_inches='tight')
     #plt.show()
+    plt.close()
     return None
 
 # test the code
@@ -93,6 +94,8 @@ if __name__ == "__main__":
     # Syn9R SCRaMbLE
     syn_chr = list(range(1, 45, 1))
     essential = [2, 7, 9, 10, 12, 20]
+    essential = [2, 7, 9, 10, 12, 19, 20, 24]  # LUs 19 and 24 are not essential but required for fast growth. Deletion of LU 6 can also generate some slow growth phenotype.
+
     CEN = [2]
 
     #SCRaMbLE_evolution_LU_count(syn_chr, 100, essential=essential, CEN=CEN, circular=False)

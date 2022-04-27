@@ -378,7 +378,7 @@ def plot_LU_CN(Chrs, Plot="histogram", essential=[], CEN=[]):
 
 def plot_LU_CN_percentage(Chrs, max_CN=5, essential=[], CEN=[], filename="", SE=""):
     LU_CN_percentage = calculate_LU_CN_percentage(Chrs, max_CN=max_CN)
-    #print(LU_CN_percentage)
+    #print("LU_CN_percentage =", LU_CN_percentage)
     LU_names = LU_CN_percentage.keys()
     CN_percentage_sorted = [[] for _ in range(max_CN+1)]
     for i in range(max_CN+1):
@@ -387,13 +387,27 @@ def plot_LU_CN_percentage(Chrs, max_CN=5, essential=[], CEN=[], filename="", SE=
     Bottom = [0 for _ in range(len(LU_CN_percentage.values()))]
     #print("CN_percentage_sorted =", CN_percentage_sorted)
     Labels = [str(x) for x in range(max_CN+1)]
-    Labels[-1] = ">=" + Labels[-1]
+    Labels[-1] = "≥" + Labels[-1]
     # get discrete colormap
     # You can choose different gradients here: https://matplotlib.org/stable/tutorials/colors/colormaps.html
     Colours = cm.Reds(np.linspace(0, 1, max_CN+1))     # Colours = Blues, Reds, Greys, YlGn, YlOrBr, binary
 
     # Plot
-    plt.figure(figsize=(20, 10))
+    #plt.figure(figsize=(12, 6), dpi=300)
+    plt.figure(figsize=(7.5, 2.75), dpi=300)    # figsize=(7.5, 3.5)
+    # Font size
+    SMALL_SIZE = 6
+    MEDIUM_SIZE = 8
+    BIGGER_SIZE = 8
+    plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
+    plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
+    plt.rc('axes', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+    plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
+    plt.rc('xtick', labelsize=SMALL_SIZE)  # fontsize of the tick labels     # labelsize=4 for chromosomes longer than 100
+    plt.rc('ytick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
+    plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
+    plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+
     for i in range(max_CN+1):
         plt.bar(LU_names, CN_percentage_sorted[i], bottom=Bottom, label=Labels[i], color=Colours[i])  # color=Colours[i]
         # This sums the two lists bottom and the last values CN_percentage_sorted[i]
@@ -406,20 +420,20 @@ def plot_LU_CN_percentage(Chrs, max_CN=5, essential=[], CEN=[], filename="", SE=
         plt.gca().get_xticklabels()[CEN[0] - 1].set_color("gold")
     #plt.gca().get_xticklabels()[13].set_color("blue")
     #plt.gca().get_xticklabels()[31].set_color("blue")
-    plt.ylabel("Percentage LU CN")
+    plt.ylabel("Percentage of LU CN")
     plt.xlabel("LUs")
+    #plt.xticks(rotation=90)    # Use this for chromosomes longer than 100
     n_SE = ""
     if SE != "":
         n_SE = ". SE = " + str(SE)
     plt.title("Percentage of LU CN" + n_SE)
     plt.legend(loc=3)
     if filename != "":
-        plt.savefig("SCRaMbLE_evolution_percentage_LU/percentage_LU_CN_" + filename + ".png", dpi=300)
-        #plt.savefig("SCRaMbLE_evolution_percentage_LU/percentage_LU_CN_" + filename + ".svg", format='svg', dpi=300)
+        plt.savefig("SCRaMbLE_evolution_percentage_LU/percentage_LU_CN_" + filename + ".png", dpi=300, bbox_inches='tight')
+        plt.savefig("SCRaMbLE_evolution_percentage_LU/percentage_LU_CN_" + filename + ".svg", format='svg', dpi=300, bbox_inches='tight')
     else:
-        _=0
-        #plt.savefig("SCRaMbLE_evolution_percentage_LU/percentage_LU_CN.png", dpi=300)
-        #plt.savefig("SCRaMbLE_evolution_percentage_LU/percentage_LU_CN.svg", format='svg', dpi=300)
+        plt.savefig("SCRaMbLE_evolution_percentage_LU/percentage_LU_CN.png", dpi=300, bbox_inches='tight')
+        plt.savefig("SCRaMbLE_evolution_percentage_LU/percentage_LU_CN.svg", format='svg', dpi=300, bbox_inches='tight')
     #plt.show()
     plt.close()
     return None
@@ -471,7 +485,7 @@ if __name__ == "__main__":
 
     syn_chr = list(range(1, 101, 1))
     essential = [50]
-    #SCRaMbLE_SIM_LU_CN(syn_chr, events=1000, simulations=500, essential=essential, CEN=[50], circular=True, mu=0,sigma=10, force=True, probability=[0, 2, 2, 2], max_CN=10)
+    #SCRaMbLE_SIM_LU_CN(syn_chr, events=1000, simulations=500, essential=essential, CEN=[50], circular=True, mu=0,sigma=10, force=True, probability=[0, 2, 2, 2], max_CN=8)
 
     # I use the following website to create the giff: https://ezgif.com/maker
 

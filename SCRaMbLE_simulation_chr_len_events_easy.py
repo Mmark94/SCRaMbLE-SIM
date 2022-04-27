@@ -38,8 +38,12 @@ def SCRaMbLE_SIM_length(syn_chr, events=15, simulations=100, essential=[], CEN=[
             # Perform SCRaMbLE on the synthetic chromosome
             #SCRaMbLEd = force_SCRaMLE_lin_cir(SCRaMbLEd, Number_events=1, essential=essential, circular=circular, mu=mu, sigma=sigma, CEN=CEN, force=force, probability=probability)
             chr_events = force_SCRaMLE_lin_cir_events(SCRaMbLEd, Number_events=1, essential=essential, circular=circular, mu=mu, sigma=sigma, CEN=CEN, force=force, probability=probability, event_type=True)
+            #print(chr_events)
             SCRaMbLEd = chr_events[0]
-            Events[s].append(chr_events[1][0])
+            if chr_events[1] != []:
+                Events[s].append(chr_events[1][0])
+            else:
+                Events[s].append("NULL")
             # Get some statistics about the SCRaMbLEd chromosome
             NG50 = NG50_calculator(SCRaMbLEd)
             chr_len[s].append(len(SCRaMbLEd))
@@ -138,8 +142,9 @@ def plot_SCRaMbLE_chr_len(syn_chr, events=15, simulations=100, essential=[], CEN
     # Plot the results
     plot_chr_len(SCRaMbLEd_events, chr_len_L, L_unique=L_unique_L, LG50=LG50_L, num_essential=len(essential), simulations=simulations, circular=circular, probability=probability, file_name=file_name, SD_chr_len=chr_len_SD, SD_L_unique=L_unique_SD, SD_LG50=LG50_SD)
     # plot the frequencies of the SCRaMbLE events types
-    plt.figure(figsize=(18, 9))
+    plt.figure(figsize=(7, 3.5), dpi=300)
     #print(len(SCRaMbLEd_events), len(DELs))
+    plt.ylim(0, 1)
     plt.plot(SCRaMbLEd_events[1:], DELs, label="DELs")
     plt.plot(SCRaMbLEd_events[1:], INVs, label="INVs")
     plt.plot(SCRaMbLEd_events[1:], DUPs, label="DUPs")
@@ -159,8 +164,8 @@ def plot_SCRaMbLE_chr_len(syn_chr, events=15, simulations=100, essential=[], CEN
     for i in probability:
         probability_str = probability_str + str(i)
     file_name1 = "SCRaMbLE_chr_len/SCRaMbLE_events_types_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed
-    plt.savefig(file_name1 + ".png", dpi=200)
-    plt.savefig(file_name1 + ".svg", format="svg", dpi=200)
+    plt.savefig(file_name1 + ".png", dpi=300, bbox_inches='tight')
+    plt.savefig(file_name1 + ".svg", format="svg", dpi=300, bbox_inches='tight')
     plt.show()
     plt.close()
     return None
@@ -230,12 +235,12 @@ def chr_len_range_SCRaMbLE(events=15, simulations=100, essential=[], CEN=[], cir
     SCRaMbLEd_events = list(range(0, events + 1, 1))  # +1 because we record also the initial value
 
     # plot the results
-    plt.figure(figsize=(18, 9))
+    plt.figure(figsize=(7, 3.5), dpi=300)
 
     # Font size
-    SMALL_SIZE = 16
-    MEDIUM_SIZE = 20
-    BIGGER_SIZE = 24
+    SMALL_SIZE = 8
+    MEDIUM_SIZE = 10
+    BIGGER_SIZE = 12
     plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
     plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
     plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
@@ -277,8 +282,8 @@ def chr_len_range_SCRaMbLE(events=15, simulations=100, essential=[], CEN=[], cir
         probability_str = probability_str + str(i)
 
     file_name = "SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed
-    plt.savefig(file_name + ".png", dpi=200)
-    plt.savefig(file_name + ".svg", format="svg", dpi=200)
+    plt.savefig(file_name + ".png", dpi=300, bbox_inches='tight')
+    plt.savefig(file_name + ".svg", format="svg", dpi=300, bbox_inches='tight')
     plt.show()
     plt.close()
     return None
@@ -308,12 +313,12 @@ def chr_len_essential_range_SCRaMbLE(syn_chr=50, events=15, simulations=100, CEN
     SCRaMbLEd_events = list(range(0, events + 1, 1))  # +1 because we record also the initial value
 
     # plot the results
-    plt.figure(figsize=(18, 9))
+    plt.figure(figsize=(7, 3.5), dpi=300)
 
     # Font size
-    SMALL_SIZE = 16
-    MEDIUM_SIZE = 20
-    BIGGER_SIZE = 24
+    SMALL_SIZE = 8
+    MEDIUM_SIZE = 10
+    BIGGER_SIZE = 12
     plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
     plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
     plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
@@ -344,8 +349,8 @@ def chr_len_essential_range_SCRaMbLE(syn_chr=50, events=15, simulations=100, CEN
     for i in probability:
         probability_str = probability_str + str(i)
     file_name = "SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed
-    plt.savefig(file_name + ".png", dpi=200)
-    plt.savefig(file_name + ".svg", format="svg", dpi=200)
+    plt.savefig(file_name + ".png", dpi=300, bbox_inches='tight')
+    plt.savefig(file_name + ".svg", format="svg", dpi=300, bbox_inches='tight')
     plt.show()
     plt.close()
     return None
@@ -369,12 +374,12 @@ def chr_len_probabilities_range_SCRaMbLE(syn_chr=50, events=15, simulations=100,
     SCRaMbLEd_events = list(range(0, events + 1, 1))  # +1 because we record also the initial value
 
     # plot the results
-    plt.figure(figsize=(18, 9))
+    plt.figure(figsize=(7, 3.5), dpi=300)
 
     # Font size
-    SMALL_SIZE = 16
-    MEDIUM_SIZE = 20
-    BIGGER_SIZE = 24
+    SMALL_SIZE = 8
+    MEDIUM_SIZE = 10
+    BIGGER_SIZE = 12
     plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
     plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
     plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
@@ -410,8 +415,8 @@ def chr_len_probabilities_range_SCRaMbLE(syn_chr=50, events=15, simulations=100,
         plt.yscale('log')
         log_id = "_log"
     file_name = "SCRaMbLE_chr_len/chr_length_" + lin_cir + "_events_" + str(SCRaMbLEd_events[-1]) + "_sim_" + str(simulations) + "_P" + probability_str + "_" + file_name + random_seed + log_id
-    plt.savefig(file_name + ".png", dpi=200)
-    plt.savefig(file_name + ".svg", format="svg", dpi=200)
+    plt.savefig(file_name + ".png", dpi=300, bbox_inches='tight')
+    plt.savefig(file_name + ".svg", format="svg", dpi=300, bbox_inches='tight')
     plt.show()
     plt.close()
     return None
@@ -421,18 +426,33 @@ if __name__ == "__main__":
 
     syn_chr = list(range(1, 45, 1))
     essential = [2, 7, 9, 10, 12, 20]
+    essential = [2, 7, 9, 10, 12, 19, 20, 24]  # LUs 19 and 24 are not essential but required for fast growth. Deletion of LU 6 can also generate some slow growth phenotype.
     #num_essential = 10
     #essential = sorted(random.sample(syn_chr, k=num_essential))
+    #print("essential =", essential)
     CEN = [2]
     events = 1000
     simulations = 100
 
-    #plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], SD=True)
-    syn_chr = list(range(1, 100, 1))
-    events = 500
-    plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=False, mu=0, sigma=10, force=True, probability=[0, 4, 4, 1], SD=True)
+    plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=True, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], SD=True)
+    syn_chr = list(range(1, 101, 1))
+    events = 750
+    #plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=False, mu=0, sigma=10, force=True, probability=[0, 4, 4, 1], SD=True)
+    #num_essential = 10
+    #essential = sorted(random.sample(syn_chr, k=num_essential))
+    #print("essential =", essential)
+    #plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=[essential[4]], circular=False, mu=0, sigma=10, force=True, probability=[0, 4, 4, 1], SD=True)
 
     #plot_mean_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1])
+
+    # Neutral Evolution. Zero essential LUs
+    syn_chr = list(range(1, 101, 1))
+    essential = []
+    CEN = []
+    events = 1000
+    simulations = 100
+    #plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=False, mu=0, sigma=10, force=True, probability=[0, 10, 10, 9], SD=True)
+    #plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=False, mu=0, sigma=10, force=True, probability=[0, 10, 10, 11], SD=True)
 
     # chr_len_range_SCRaMbLE
     syn_chr = list(range(1, 25, 1))

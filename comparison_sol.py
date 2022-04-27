@@ -788,6 +788,8 @@ def check_sol_threshold(solutions, paths, threshold=0):
 
 
 def NG50_calculator(Chr):
+    if Chr == []:
+        return 0, 0,  0, 0, 0, 0
     new_chr = [abs(x) for x in Chr]
     new_chr = sorted(new_chr)
     new_chr = sorted(new_chr, key=new_chr.count, reverse=True)
@@ -813,6 +815,8 @@ def NG50_calculator(Chr):
 #print(Chr_a)
 
 def essential_ratio_calculator(chromosome: int, essential=[]):
+    if chromosome == []:
+        return 0
     essential = [abs(x) for x in essential]
     chr_L = len(chromosome)
     num_essential = 0

@@ -147,22 +147,22 @@ def coverage2(paths, solution):
         if elem not in Dic:
             Dic[elem] = 0
     if isinstance(paths[0], int):
-        for path in paths:
-            path = abs(path)
-            if path not in Dic:
-                print(path)
-                Dic[path] = 1
+        for LU in paths:
+            LU = abs(LU)
+            if LU not in Dic:
+                print(LU)
+                Dic[LU] = 1
             else:
-                Dic[path] = Dic[path]+1
+                Dic[LU] = Dic[LU]+1
         return Dic
     else:
-        for path2 in paths:
-            for path in path2:
-                path = abs(path)
-                if path not in Dic:
-                    Dic[path] = 1
+        for path in paths:
+            for LU in path:
+                LU = abs(LU)
+                if LU not in Dic:
+                    Dic[LU] = 1
                 else:
-                    Dic[path] = Dic[path] + 1
+                    Dic[LU] = Dic[LU] + 1
         return Dic
 
 #solution=[1,2,3,4,5,6]
@@ -181,20 +181,28 @@ def plot_Dic(myDictionary):
 
     plt.bar(myDictionary.keys(), myDictionary.values(), width, color='g')
     plt.show()
+    plt.close()
+    return None
 
 
 def plot_Dic2(myDictionary):
     # Plot
-    plt.figure(figsize=(20, 10))
+    plt.figure(figsize=(7, 3), dpi=300)
     plt.bar(myDictionary.keys(), myDictionary.values(), align='center')
     #plt.xticks(range(max(myDictionary.keys()) +1), range(max(myDictionary.keys())+1))
-    plt.ylabel("Number of LU")
+    #plt.ylabel("Number of LUs in the reads")
+    #plt.ylabel("Percentage of LU CN compared to the total number of LUs")
+    #plt.ylabel("Percentage of LU CN in the reads")
+    plt.ylabel("Coverage")  # CN in the reads
     plt.xlabel("LU")
-    plt.title("Coverage")
+    plt.title("Coverage")   # "Coverage (k reads)"
     #plt.text(max(R_L.keys()) * 0.8, Mx_value * 0.9,"Reads length mean =" + str(reads_length_mean) + "\n" + "Reads length median =" + str(reads_length_median) + "\n" + "N50 =" + str(N50))
-    plt.savefig("Coverage.png", dpi=200)
+    plt.savefig("Coverage.png", dpi=300, bbox_inches='tight')
+    plt.savefig("Coverage.svg", format='svg', dpi=300, bbox_inches='tight')
     # plt.legend()
     plt.show()
+    plt.close()
+    return None
 
 # This function is from Mapping_coverage_MM.py
 def divide_dictionary(Dic1, divisor):
@@ -215,4 +223,5 @@ if __name__ == "__main__":
     print("cov_percentage =", cov_percentage)
     #plot_Dic(cov)
     plot_Dic2(cov)
+    #cov_percentage = divide_dictionary(cov, 1000)
     plot_Dic2(cov_percentage)

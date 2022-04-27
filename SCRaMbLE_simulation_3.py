@@ -208,7 +208,9 @@ def SCRaMbLE3(syn_chr, Number_events, mu=7, sigma=7):
     return new_chr
 
 def SCRaMbLE4(syn_chr, Number_events, essential=[], mu=0, sigma=10, CEN=[], probability=[3, 2, 2, 1], event_type=False):
-    if len(syn_chr) <= 1:
+    if len(syn_chr) == 0:
+        if event_type:
+            return syn_chr, []
         return syn_chr
     # Add the Centromere to the essential LU
     for LU in CEN:
@@ -368,7 +370,7 @@ def force_SCRaMLE_lin_cir_events(syn_chr: list, Number_events: int, essential=[]
     for _ in range(Number_events):
         new_chr1 = new_chr2[:]
         counter = 0         # the counter make sure the program do not get stuck and loop infinite times.
-        while new_chr1 == new_chr2 and counter < 20:
+        while new_chr1 == new_chr2 and counter < 20 and new_chr2 != []:
             if event_type:
                 if circular:
                     chr_temp = SCRaMbLE4_circular(new_chr1, 1, essential=essential, mu=mu, sigma=sigma, CEN=CEN, probability=probability, event_type=True)
@@ -383,6 +385,8 @@ def force_SCRaMLE_lin_cir_events(syn_chr: list, Number_events: int, essential=[]
                 else:
                     new_chr2 = SCRaMbLE4(new_chr1, 1, essential=essential, mu=mu, sigma=sigma, CEN=CEN, probability=probability)
             counter = counter + 1
+            if counter == 20:
+                Events.append("NULL")
         #print(new_chr2)
     if event_type:
         #print("Events =", len(Events), Events)

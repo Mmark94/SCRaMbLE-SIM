@@ -45,7 +45,7 @@ def SCRaMbLE_population(syn_chr, initial_cells=1, number_replication=8, events_f
     cells = [syn_chr for _ in range(initial_cells)]
     for i in range(number_replication):
         # The daughter cells (half of them) will have plus one SCRaMbLE event
-        new_cells = [SCRaMbLE4(x, events_for_replication, essential, mu, sigma, CEN) for x in cells]
+        new_cells = [SCRaMbLE4(Chr, events_for_replication, essential=essential, mu=mu, sigma=sigma, CEN=CEN) for Chr in cells]
         # The cells double at each replication
         cells = cells + new_cells
     return cells
@@ -58,9 +58,10 @@ def SCRaMbLE_population2(syn_chr, initial_cells=1, number_replication=8, events_
     new_cells = []
     for i in range(number_replication):
         # The daughter cells (half of them) will have plus one SCRaMbLE event
-        for x in cells:
-            SCRaMbLEd_cell = SCRaMbLE4(x, events_for_replication, essential, mu, sigma, CEN)
-            if SCRaMbLEd_cell != x:
+        for Chr in cells:
+            SCRaMbLEd_cell = SCRaMbLE4(Chr, events_for_replication, essential=essential, mu=mu, sigma=sigma, CEN=CEN)
+            # If an essential LU is deleted, the function SCRaMbLE4 will out the same chromosome. Therefore, if the chromosome is the same, I want to remove it.
+            if SCRaMbLEd_cell != Chr:
                 new_cells.append(SCRaMbLEd_cell)
         # The cells double at each replication
         cells = cells + new_cells
@@ -70,7 +71,7 @@ def death_rate_by_SCRaMbLE(population, survivor_rate):
     # death_rate = 1 - survivor_rate
     survivors = {}
     for i in population:
-        if i == 0:  # this if exclude the error: division by zero
+        if i == 0:  # this excludes the error: division by zero
             survivors[i] = population[i]
         else:
             survivors[i] = round(population[i] * (survivor_rate ** i), 4)
@@ -82,10 +83,13 @@ def death_rate_by_SCRaMbLE(population, survivor_rate):
     return survivors
 
 def plot_Dic2(myDictionary, file_name="SCRaMbLEd_cells"):
+    # Plot
+    plt.figure(figsize=(7, 3.5), dpi=300)
+
     # Font size
-    SMALL_SIZE = 16
-    MEDIUM_SIZE = 20
-    BIGGER_SIZE = 24
+    SMALL_SIZE = 8
+    MEDIUM_SIZE = 10
+    BIGGER_SIZE = 12
     plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
     plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
     plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
@@ -93,22 +97,28 @@ def plot_Dic2(myDictionary, file_name="SCRaMbLEd_cells"):
     plt.rc('ytick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
     plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
     plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+
     # Plot
-    plt.figure(figsize=(20, 10))
     plt.bar(myDictionary.keys(), myDictionary.values(), align='center')
-    plt.xticks(range(max(myDictionary.keys()) +1), range(max(myDictionary.keys())+1))
+    plt.xticks(range(max(myDictionary.keys()) + 1), range(max(myDictionary.keys()) + 1))
     plt.ylabel("Number cells")
     plt.xlabel("SCRaMbLE events")
     plt.title(file_name)
-    plt.savefig("SCRaMbLE_population/" + file_name + ".png", dpi=200)
+    plt.savefig("SCRaMbLE_population/" + file_name + ".png", dpi=300, bbox_inches='tight')
+    plt.savefig("SCRaMbLE_population/" + file_name + ".svg", format='svg', dpi=300, bbox_inches='tight')
     plt.show()
+    plt.close()
+    return None
 
 def plot_Dic_survivor(myDictionary, myDictionary2, file_name="survivor_SCRaMbLEd_cells", survivor_rate = 0.5):
     # myDictionary = All cells, myDictionary2 = survivor cells
+    # Plot
+    plt.figure(figsize=(7, 3.5), dpi=300)
+
     # Font size
-    SMALL_SIZE = 16
-    MEDIUM_SIZE = 20
-    BIGGER_SIZE = 24
+    SMALL_SIZE = 8
+    MEDIUM_SIZE = 10
+    BIGGER_SIZE = 12
     plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
     plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
     plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
@@ -116,31 +126,35 @@ def plot_Dic_survivor(myDictionary, myDictionary2, file_name="survivor_SCRaMbLEd
     plt.rc('ytick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
     plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
     plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+
     # Plot
-    plt.figure(figsize=(20, 10))
     plt.bar(myDictionary.keys(), myDictionary.values(), align='center', color='indianred', label="Dead cells")
     plt.bar(myDictionary2.keys(), myDictionary2.values(), align='center', color='limegreen', label="Alive cells")
-    plt.xticks(range(max(myDictionary.keys()) +1), range(max(myDictionary.keys())+1))
-    plt.ylabel("Number cells")
-    plt.xlabel("SCRaMbLE events")
+    plt.xticks(range(max(myDictionary.keys()) + 1), range(max(myDictionary.keys()) + 1))
+    plt.ylabel("Number of cells")
+    plt.xlabel("Number of SCRaMbLE events")
     plt.title(file_name)
-    plt.text(0, max(myDictionary.values()) * 0.95,"SCRaMbLE event survivor rate = " + str(survivor_rate))
-    plt.savefig("SCRaMbLE_population/" + file_name + "_SR_" + str(survivor_rate) + ".png", dpi=200)
+    plt.text(-0.5, max(myDictionary.values()) * 0.95, "SCRaMbLE event survivor rate = " + str(survivor_rate))
+    plt.savefig("SCRaMbLE_population/" + file_name + "_SR_" + str(survivor_rate) + ".png", dpi=300, bbox_inches='tight')
+    plt.savefig("SCRaMbLE_population/" + file_name + "_SR_" + str(survivor_rate) + ".svg", format='svg', dpi=300, bbox_inches='tight')
     plt.legend()
     #plt.show()
     plt.close()
+    return None
+# I use the following website to create giff: https://ezgif.com/maker
 
 def death_rate_by_SCRaMbLE_plot(initial_cells=1, number_replication=8, survivor_rate=0.5):
     cells = daughter_promoter(initial_cells, number_replication)[1]
     survivor = death_rate_by_SCRaMbLE(cells, survivor_rate)
     plot_Dic_survivor(cells, survivor, "survivor_SCRaMbLEd_cells", survivor_rate)
+    return None
 
 # test the code
 if __name__ == "__main__":
 
     segments = 44  #number of loxP segments
     syn_chr = list(range(1, segments+1, 1))
-    essential = [2,7,9,10,12,20]
+    essential = [2, 7, 9, 10, 12, 19, 20, 24]  # LUs 19 and 24 are not essential but required for fast growth. Deletion of LU 6 can also generate some slow growth phenotype.
     print("syn_chr =", syn_chr)
 
     Cell = daughter_promoter(3, 8)
