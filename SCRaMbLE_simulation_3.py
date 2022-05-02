@@ -52,16 +52,16 @@ def deletion_essential(pos1, pos2, syn_chr, essential=[]):
         temp=pos1
         pos1=pos2
         pos2=temp
+    # It create the new chromosome with the deletion
+    new_chr = syn_chr[:pos1] + syn_chr[pos2:]
     if essential==[]:
-        return syn_chr[:pos1] + syn_chr[pos2:]
+        return new_chr
     # It check if all the essential fragments are in the synthetic chromosome before the deletion happen. If there are not, it simply continue with the deletion.
     new_essential = []
     syn_chr_abs = [abs(ele) for ele in syn_chr]
     for esse in essential:
         if esse in syn_chr_abs:
             new_essential.append(esse)
-    # It create the new chromosome with the deletion
-    new_chr = syn_chr[:pos1] + syn_chr[pos2:]
     # It check if all the essential fragments are in the synthetic chromosome after the deletion happened. If there are not, it will output the original chr.
     new_chr_abs = [abs(ele) for ele in new_chr]
     T = all(elem in new_chr_abs for elem in new_essential)
@@ -260,6 +260,7 @@ def SCRaMbLE4(syn_chr, Number_events, essential=[], mu=0, sigma=10, CEN=[], prob
         if event == "NULL":
             continue
         if event == "DEL":
+            #new_chr = deletion(pos1, pos2, new_chr)
             new_chr = deletion_essential(pos1, pos2, new_chr, essential)
         if event == "INV":
             new_chr = inversion(pos1, pos2, new_chr)
@@ -273,7 +274,7 @@ def SCRaMbLE4(syn_chr, Number_events, essential=[], mu=0, sigma=10, CEN=[], prob
 
 # Plot the SCRaMbLE events length. This should follow a "discretized half normal distribution"
 def plot_events_length(events=100000, mu=0, sigma=10):
-    syn_chr = list(range(1,45))
+    syn_chr = list(range(1, 45))
     Dict_E_length = {}
     for i in range(len(syn_chr)+1):
         Dict_E_length[i] = 0
@@ -315,15 +316,32 @@ def plot_events_length(events=100000, mu=0, sigma=10):
         Dict_E_length_probability[Key] = Value / events
 
     # Plot the Events length
-    plt.figure(figsize=(20, 10))
+    plt.figure(figsize=(7, 3.5), dpi=300)
+    # Font size
+    SMALL_SIZE = 8
+    MEDIUM_SIZE = 10
+    BIGGER_SIZE = 11
+    plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
+    plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
+    plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
+    plt.rc('xtick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
+    plt.rc('ytick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
+    plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
+    plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+
     plt.bar(Dict_E_length.keys(), Dict_E_length_probability.values(), align='center')
-    plt.xticks(range(max(Dict_E_length.keys()) +1), range(max(Dict_E_length_probability.keys())+1))
-    plt.ylabel("Events probability")
-    plt.xlabel("Length")
-    plt.title("Events length distribution")
-    plt.text(max(Dict_E_length.keys()) * 0.8, max(Dict_E_length_probability.values()) * 0.85, "Number of Events = " + str(events) + "\n" + "Mean length (mu) = " + str(mu) + "\n" + "Sigma = " + str(sigma))
-    #plt.savefig("Events_length_distribution.png", dpi=200)
+    plt.xticks(range(max(Dict_E_length.keys()) + 1), range(max(Dict_E_length_probability.keys()) + 1))
+    plt.ylabel("Event length probability")
+    plt.xlabel("Length (LUs)")
+    plt.title("SCRaMbLE events length distribution", fontsize=11)
+    #plt.text(max(Dict_E_length.keys()) * 0.65, max(Dict_E_length_probability.values()) * 0.78, "Number of Events = " + str(events) + "\n" + "Mean length (mu) = " + str(mu) + "\n" + "Sigma = " + str(sigma) + " LUs")
+    plt.text(20, max(Dict_E_length_probability.values()) * 0.78, "Number of Events = " + str(events) + "\n" + "Mean length (mu) = " + str(mu) + "\n" + "Sigma = " + str(sigma) + " LUs")
+    plt.xlim((0, 32))
+    #plt.xticks(rotation=90)
+    plt.savefig("Events_length_distribution.png", dpi=300, bbox_inches='tight')
+    plt.savefig("Events_length_distribution.svg", format='svg', dpi=300, bbox_inches='tight')
     plt.show()
+    plt.close()
     return Dict_E_length_probability
 
 # This make sure that there is at last one SCRaMbLE event each time
@@ -489,11 +507,11 @@ if __name__ == "__main__":
     essential = [2, 7, 9, 10, 12, 19, 20, 24]  # LUs 19 and 24 are not essential but required for fast growth. Deletion of LU 6 can also generate some slow growth phenotype.
     print("syn_chr =", syn_chr)
 
-    for i in range(10):
+    for i in range(0):
         print(SCRaMbLE4_lin_cir(syn_chr, 10, essential, False, probability=[2,1,1,2]))
         print(SCRaMbLE4_lin_cir(syn_chr, 10, essential, True, probability=[2,1,1,2]))
         print(force_SCRaMLE_lin_cir(syn_chr, 10, essential, False, probability=[2,1,1,2]))
         print(force_SCRaMLE_lin_cir_events(syn_chr, 10, essential, False, probability=[2, 1, 1, 2], event_type=True))
         print()
 
-    #plot_events_length()
+    #plot_events_length(events=1000000, mu=0, sigma=10)

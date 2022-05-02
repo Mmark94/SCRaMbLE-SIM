@@ -202,13 +202,14 @@ def N50_reads(reads):
         return reads
 
 def plot_read_length(read_length):
+    plt.figure(figsize=(7, 3.5), dpi=300)
     plt.bar(range(len(read_length)), read_length.values(), align='center')
     plt.xticks(range(len(read_length)), read_length)
     plt.ylabel("Number of reads")
     plt.xlabel("Read length")
     plt.title("Read length distribution")
     #plt.text(10, 10, "Number of reads = 20")
-    # plt.savefig('read_length.png')
+    plt.savefig('read_length.png')
     plt.show()
     plt.close()
     return None
@@ -225,10 +226,11 @@ def plot_read_length2(S_path, name="0"):
     N50 = N50_reads(S_path)
 
     # Plot
+    plt.figure(figsize=(7, 3.5), dpi=300)
     # Font size
-    SMALL_SIZE = 15
-    MEDIUM_SIZE = 20
-    BIGGER_SIZE = 24
+    SMALL_SIZE = 8
+    MEDIUM_SIZE = 10
+    BIGGER_SIZE = 11
     plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
     plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
     plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
@@ -238,18 +240,17 @@ def plot_read_length2(S_path, name="0"):
     plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
     Mx_value = max(R_L.values())
-    plt.figure(figsize=(16, 9))
     plt.bar(R_L.keys(), R_L.values(), align='center')
     plt.xticks(range(max(R_L.keys())+1), range(max(R_L.keys())+1))
     plt.ylabel("Number of reads")
     plt.xlabel("Read length (LUs)")
-    plt.title("Read length distribution")
+    plt.title("Read length distribution", fontsize=11)
     plt.vlines(N50, 0, Mx_value, colors="orange", linestyle="--", label="N50")
-    plt.text(max(R_L.keys()) * 0.8, Mx_value * 0.9, "Reads length mean = " + str(reads_length_mean) + "\n" + "Reads length median = " + str(reads_length_median) + "\n" + "N50 = " + str(N50))
-    plt.savefig("read_length_distribution_" + name + "_R_number_" + str(number_reads), dpi=300)
-    plt.savefig("read_length_distribution_" + name + "_R_number_" + str(number_reads) + ".svg", format='svg', dpi=300)
+    plt.text(max(R_L.keys()) * 0.7, Mx_value * 0.85, "Reads length mean = " + str(reads_length_mean) + "\n" + "Reads length median = " + str(reads_length_median) + "\n" + "N50 = " + str(N50))
+    plt.savefig("read_length_distribution_" + name + "_R_number_" + str(number_reads), dpi=300, bbox_inches='tight')
+    plt.savefig("read_length_distribution_" + name + "_R_number_" + str(number_reads) + ".svg", format='svg', dpi=300, bbox_inches='tight')
     # plt.legend()
-    #plt.show()
+    plt.show()
     plt.close()
     return None
 
@@ -269,7 +270,7 @@ def plot_read_length_percentage(S_path, name="0"):
 
     # Plot
     Mx_value = max(R_L_percentage.values())
-    plt.figure(figsize=(20, 10))
+    plt.figure(figsize=(7, 3.5), dpi=300)
     plt.bar(range(len(R_L_percentage)), R_L_percentage.values(), align='center')
     plt.xticks(range(len(R_L_percentage)), R_L_percentage)
     plt.ylabel("Number of reads in percentage")
@@ -277,7 +278,8 @@ def plot_read_length_percentage(S_path, name="0"):
     plt.title("Read length distribution")
     plt.vlines(N50, 0, Mx_value, colors="orange", linestyle="--", label="N50")
     plt.text(max(R_L_percentage.keys()) * 0.8, Mx_value * 0.9, "Number of reads = " + str(number_reads) + "\n" + "Reads length mean = " + str(round(reads_length_mean, 1)) + "\n" + "Reads length median = " + str(reads_length_median) + "\n" + "N50 = " + str(N50))
-    plt.savefig("read_length_distribution_" + name + "_R_number_" + str(number_reads), dpi=200)
+    plt.savefig("read_length_distribution_" + name + "_R_number_" + str(number_reads) + ".png", dpi=300, bbox_inches='tight')
+    plt.savefig("read_length_distribution_" + name + "_R_number_" + str(number_reads) + ".svg", format="svg", dpi=300, bbox_inches='tight')
     # plt.legend()
     # plt.show()
     plt.close()
@@ -434,7 +436,7 @@ def plot_LU_CN_percentage(Chrs, max_CN=5, essential=[], CEN=[], filename="", SE=
     else:
         plt.savefig("SCRaMbLE_evolution_percentage_LU/percentage_LU_CN.png", dpi=300, bbox_inches='tight')
         plt.savefig("SCRaMbLE_evolution_percentage_LU/percentage_LU_CN.svg", format='svg', dpi=300, bbox_inches='tight')
-    #plt.show()
+    plt.show()
     plt.close()
     return None
 
@@ -485,7 +487,7 @@ if __name__ == "__main__":
 
     syn_chr = list(range(1, 101, 1))
     essential = [50]
-    #SCRaMbLE_SIM_LU_CN(syn_chr, events=1000, simulations=500, essential=essential, CEN=[50], circular=True, mu=0,sigma=10, force=True, probability=[0, 2, 2, 2], max_CN=8)
+    #SCRaMbLE_SIM_LU_CN(syn_chr, events=100, simulations=500, essential=essential, CEN=[50], circular=True, mu=0,sigma=10, force=True, probability=[0, 2, 2, 2], max_CN=8)
 
     # I use the following website to create the giff: https://ezgif.com/maker
 
@@ -504,6 +506,7 @@ if __name__ == "__main__":
     R_L_percentage= {R_L_keys[i]: R_L_values[i] for i in range(len(R_L_keys))}
     print("R_L =", R_L)
     print("R_L_percentage =", R_L_percentage)
+    plot_read_length2(S_path)
     plot_read_length(R_L)
     plot_read_length(R_L_percentage)
     plot_read_length_percentage(S_path)

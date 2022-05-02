@@ -25,7 +25,7 @@ def SCRaMbLE_evolution_LU_count(syn_chr, SCRaMbLE_events, essential, CEN, circul
         # Add the LU count to the LU_count_time dictionary. k is the LU, v is the copy number of the LU k.
         for k, v in LU_count.items():
             LU_count_time[k].append(v)
-    print("LU_count_time =", LU_count_time)
+    #print("LU_count_time =", LU_count_time)
 
     # Plot the data
 
@@ -48,9 +48,9 @@ def SCRaMbLE_evolution_LU_count(syn_chr, SCRaMbLE_events, essential, CEN, circul
     #print("ALL_colour =", ALL_colour)
 
     # Font size
-    SMALL_SIZE = 8
-    MEDIUM_SIZE = 10
-    BIGGER_SIZE = 12
+    SMALL_SIZE = 7
+    MEDIUM_SIZE = 8
+    BIGGER_SIZE = 10
     plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
     plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
     plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
@@ -60,13 +60,14 @@ def SCRaMbLE_evolution_LU_count(syn_chr, SCRaMbLE_events, essential, CEN, circul
     plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
     # Start creating the plot
-    fig, ax = plt.subplots(figsize=(7, 3.5), dpi=300)
+    fig, ax = plt.subplots(figsize=(4.3, 2.35), dpi=300)
+    #fig, ax = plt.subplots(figsize=(9.1, 2.35), dpi=300)
 
     SCRaMbLEd_events_list = list(range(0, SCRaMbLE_events + 1))
     ax.stackplot(SCRaMbLEd_events_list, LU_count_time.values(), labels=LU_count_time.keys(), colors=ALL_colour)
-    ax.legend(loc='upper left', prop={'size': 3})
-    ax.set_title('LoxP Units Evolution')
-    ax.set_xlabel('SCRaMbLEd_events')
+    #ax.legend(loc='upper left', prop={'size': 3})
+    #ax.set_title('LoxP Units Evolution')
+    ax.set_xlabel('SCRaMbLE Events')
     ax.set_ylabel('Number of LoxP Units')
     # ax.text(45, 60, 'Essential ' + str(essential), fontsize=10)
 
@@ -81,7 +82,7 @@ def SCRaMbLE_evolution_LU_count(syn_chr, SCRaMbLE_events, essential, CEN, circul
     for i in probability:
         probability_str = probability_str + str(i)
     filename = "SCRaMbLE_evolution_LU/SCRaMbLE_evolution_LU_count_chr_" + lin_cir + "_L" + str(len(syn_chr)) + "_Ev" + str(SCRaMbLE_events) + "_P" + probability_str + "_s" + random_seed
-    print("# " + filename)
+    #print("# " + filename)
     plt.savefig(filename + ".png", dpi=300, bbox_inches='tight')
     plt.savefig(filename + ".svg", format="svg", dpi=300, bbox_inches='tight')
     #plt.show()
@@ -94,19 +95,19 @@ if __name__ == "__main__":
     # Syn9R SCRaMbLE
     syn_chr = list(range(1, 45, 1))
     essential = [2, 7, 9, 10, 12, 20]
-    essential = [2, 7, 9, 10, 12, 19, 20, 24]  # LUs 19 and 24 are not essential but required for fast growth. Deletion of LU 6 can also generate some slow growth phenotype.
+    #essential = [2, 7, 9, 10, 12, 19, 20, 24]  # LUs 19 and 24 are not essential but required for fast growth. Deletion of LU 6 can also generate some slow growth phenotype.
 
     CEN = [2]
 
     #SCRaMbLE_evolution_LU_count(syn_chr, 100, essential=essential, CEN=CEN, circular=False)
 
-    for i in range(5):
+    for i in range(10):
         print(i)
-        SCRaMbLE_evolution_LU_count(syn_chr, 500, essential=essential, CEN=CEN, circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1])
+        SCRaMbLE_evolution_LU_count(syn_chr, 500, essential=essential, CEN=CEN, circular=True, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1])
 
-    for i in range(0):
-        print(i)
-        SCRaMbLE_evolution_LU_count(list(range(1, 100, 1)), 500, essential=[], CEN=[], circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 2])
+    #for i in range(0):
+    #    print(i)
+    #    SCRaMbLE_evolution_LU_count(list(range(1, 100, 1)), 500, essential=[], CEN=[], circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 2])
 
     """
     # Syn3 SCRaMbLE

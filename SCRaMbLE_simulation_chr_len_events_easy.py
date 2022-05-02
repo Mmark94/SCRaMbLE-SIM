@@ -143,15 +143,28 @@ def plot_SCRaMbLE_chr_len(syn_chr, events=15, simulations=100, essential=[], CEN
     plot_chr_len(SCRaMbLEd_events, chr_len_L, L_unique=L_unique_L, LG50=LG50_L, num_essential=len(essential), simulations=simulations, circular=circular, probability=probability, file_name=file_name, SD_chr_len=chr_len_SD, SD_L_unique=L_unique_SD, SD_LG50=LG50_SD)
     # plot the frequencies of the SCRaMbLE events types
     plt.figure(figsize=(7, 3.5), dpi=300)
+
+    # Font size
+    SMALL_SIZE = 8
+    MEDIUM_SIZE = 9
+    BIGGER_SIZE = 10
+    plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
+    plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
+    plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
+    plt.rc('xtick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
+    plt.rc('ytick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
+    plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
+    plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+
     #print(len(SCRaMbLEd_events), len(DELs))
     plt.ylim(0, 1)
-    plt.plot(SCRaMbLEd_events[1:], DELs, label="DELs")
-    plt.plot(SCRaMbLEd_events[1:], INVs, label="INVs")
-    plt.plot(SCRaMbLEd_events[1:], DUPs, label="DUPs")
-    plt.plot(SCRaMbLEd_events[1:], essential_ratio_L, label="essential ratio")
+    plt.plot(SCRaMbLEd_events[1:], DELs, label="DELs", linewidth=0.7)
+    plt.plot(SCRaMbLEd_events[1:], INVs, label="INVs", linewidth=0.7)
+    plt.plot(SCRaMbLEd_events[1:], DUPs, label="DUPs", linewidth=0.7)
+    plt.plot(SCRaMbLEd_events[1:], essential_ratio_L, label="essential ratio", linewidth=0.7)
     plt.ylabel("Percentage of event type over " + str(simulations) + " simulations")
     plt.xlabel("SCRaMbLEd events")
-    plt.title("Frequencies of SCRaMbLE event types")
+    plt.title("Frequencies of SCRaMbLE event types", fontsize=9)
     plt.legend()
     # These are some information to add to the saved files.
     # Create a random seed to save the image
@@ -257,7 +270,7 @@ def chr_len_range_SCRaMbLE(events=15, simulations=100, essential=[], CEN=[], cir
     plt.plot(0, 0, label="Len unique", color="cornflowerblue")
     # plt.plot(0,0, label="LG50", color="tab:green")
     #Labels = ["Chr = 25", "Chr = 50", "Chr = 75", "Chr = 100", "Chr = 125", "Chr = 150", "Chr = 175", "Chr = 200"]
-    Labels = ["Chr = 25", "Chr = 75", "Chr = 125", "Chr = 175", "Chr = 225"]
+    Labels = ["Chr len = 25", "Chr len = 75", "Chr len = 125", "Chr len = 175", "Chr len = 225"]
 
     for i in range(len(chr_len_multi)):
         plt.plot(SCRaMbLEd_events, chr_len_multi[i], label=Labels[i])
@@ -267,7 +280,7 @@ def chr_len_range_SCRaMbLE(events=15, simulations=100, essential=[], CEN=[], cir
         #if LG50 != [[]]:
         #    plt.plot(SCRaMbLEd_events, LG50[i], label="LG50", color="tab:green")
 
-    plt.hlines(num_essential, 0, SCRaMbLEd_events[-1], colors="red", linestyle=":", label="Essential LU")
+    plt.hlines(num_essential, 0, SCRaMbLEd_events[-1], colors="red", linestyle=":", label="No. essential LUs")
     plt.legend()
 
     # These are some information to add to the saved files.
@@ -331,7 +344,7 @@ def chr_len_essential_range_SCRaMbLE(syn_chr=50, events=15, simulations=100, CEN
     plt.xlabel("SCRaMbLEd events")
     plt.title("Chr length over SCRaMbLE events")
 
-    Labels = ["# essential = 0", "# essential = 10", "# essential = 20", "# essential = 30", "# essential = 40", "# essential = 50"]
+    Labels = ["# essential LUs = 0", "# essential LUs = 10", "# essential LUs = 20", "# essential LUs = 30", "# essential LUs = 40", "# essential LUs = 50"]
 
     for i in range(len(chr_len_multi)):
         plt.plot(SCRaMbLEd_events, chr_len_multi[i], label=Labels[i])
@@ -392,13 +405,14 @@ def chr_len_probabilities_range_SCRaMbLE(syn_chr=50, events=15, simulations=100,
     plt.xlabel("SCRaMbLEd events")
     plt.title("Chr length over SCRaMbLE events")
 
-    Labels = ["P(Del)/P(Dup) = 4", "P(Del)/P(Dup) = 2", "P(Del)/P(Dup) = 1", "P(Del)/P(Dup) = 1/2", "P(Del)/P(Dup) = 1/4"]
+    #Labels = ["P(Del)/P(Dup) = 4", "P(Del)/P(Dup) = 2", "P(Del)/P(Dup) = 1", "P(Del)/P(Dup) = 1/2", "P(Del)/P(Dup) = 1/4"]
+    Labels = ["$P_{DEL}/P_{DUP} = 4$", "$P_{DEL}/P_{DUP} = 2$", "$P_{DEL}/P_{DUP} = 1$", "$P_{DEL}/P_{DUP} = 1/2$", "$P_{DEL}/P_{DUP} = 1/4$"]
 
     for i in range(len(chr_len_multi)):
         plt.plot(SCRaMbLEd_events, chr_len_multi[i], label=Labels[i])
         # if L_unique != [[]]:
         #    plt.plot(SCRaMbLEd_events, L_unique[i], color="cornflowerblue")
-    plt.hlines(num_essential, 0, SCRaMbLEd_events[-1], colors="red", linestyle=":", label="Essential LU")
+    plt.hlines(num_essential, 0, SCRaMbLEd_events[-1], colors="red", linestyle=":", label="No. essential LUs")
     plt.legend()
     # These are some information to add to the saved files.
     # Create a random seed to save the image
@@ -432,15 +446,15 @@ if __name__ == "__main__":
     #print("essential =", essential)
     CEN = [2]
     events = 1000
-    simulations = 100
+    simulations = 500
 
-    plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=True, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], SD=True)
+    #plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=True, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], SD=True)
     syn_chr = list(range(1, 101, 1))
     events = 750
     #plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=False, mu=0, sigma=10, force=True, probability=[0, 4, 4, 1], SD=True)
-    #num_essential = 10
-    #essential = sorted(random.sample(syn_chr, k=num_essential))
-    #print("essential =", essential)
+    num_essential = 10
+    essential = sorted(random.sample(syn_chr, k=num_essential))
+    print("essential =", essential)
     #plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=[essential[4]], circular=False, mu=0, sigma=10, force=True, probability=[0, 4, 4, 1], SD=True)
 
     #plot_mean_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1])
