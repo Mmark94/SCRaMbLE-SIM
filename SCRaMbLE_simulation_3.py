@@ -314,7 +314,18 @@ def plot_events_length(events=100000, mu=0, sigma=10):
     Dict_E_length_probability = {}
     for Key, Value in Dict_E_length.items():
         Dict_E_length_probability[Key] = Value / events
-
+    print("Dict_E_length_probability =", Dict_E_length_probability)
+    cumulative_p = 0
+    N50 = 0
+    N75 = 0
+    for Key, Value in Dict_E_length_probability.items():
+        cumulative_p = cumulative_p + Value
+        print(Key, Value, cumulative_p)
+        if cumulative_p > 0.5 and N50 == 0:
+            N50 = Key - 0.5
+        if cumulative_p > 0.75 and N75 == 0:
+            #N75 = Key - 0.5
+            N75 = Key + 0.5
     # Plot the Events length
     plt.figure(figsize=(7, 3.5), dpi=300)
     # Font size
@@ -328,12 +339,14 @@ def plot_events_length(events=100000, mu=0, sigma=10):
     plt.rc('ytick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
     plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
     plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
-
-    plt.bar(Dict_E_length.keys(), Dict_E_length_probability.values(), align='center')
+    plt.grid(True, axis="y", zorder=-1, alpha=0.5)
+    plt.bar(Dict_E_length.keys(), Dict_E_length_probability.values(), align='center', zorder=2)
+    plt.vlines(N50, 0, max(Dict_E_length_probability.values()) * 0.95, colors="orange", linestyle=":", label="N50", zorder=1)
+    plt.vlines(N75, 0, max(Dict_E_length_probability.values()) * 0.95, colors="green", linestyle=":", label="N75", zorder=1)
     plt.xticks(range(max(Dict_E_length.keys()) + 1), range(max(Dict_E_length_probability.keys()) + 1))
     plt.ylabel("Event length probability")
     plt.xlabel("Length (LUs)")
-    plt.title("SCRaMbLE events length distribution", fontsize=11)
+    plt.title("SCRaMbLE events length distribution", fontsize=10)
     #plt.text(max(Dict_E_length.keys()) * 0.65, max(Dict_E_length_probability.values()) * 0.78, "Number of Events = " + str(events) + "\n" + "Mean length (mu) = " + str(mu) + "\n" + "Sigma = " + str(sigma) + " LUs")
     plt.text(20, max(Dict_E_length_probability.values()) * 0.78, "Number of Events = " + str(events) + "\n" + "Mean length (mu) = " + str(mu) + "\n" + "Sigma = " + str(sigma) + " LUs")
     plt.xlim((0, 32))
