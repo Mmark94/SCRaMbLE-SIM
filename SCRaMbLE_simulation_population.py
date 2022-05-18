@@ -112,6 +112,7 @@ def death_rate_by_SCRaMbLE(population, survivor_rate):
     print()
     return survivors
 
+# Correlation between SCRaMbLE events mortality rate and the amount of cell surviving wihin a SCRaMbLE population.
 def plot_SE_mortality_vs_cell_survival(population: dict):
     mortality_range = np.arange(0.0, 1.05, 0.05)
     cell_survival_list = []
@@ -138,12 +139,14 @@ def plot_SE_mortality_vs_cell_survival(population: dict):
     plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
     plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
     # Plot
-    plt.scatter(mortality_range, cell_survival_list)
-    plt.ylabel("Cell surviving")
-    plt.xlabel("SE mortality rate")
-    plt.title("SE mortality vs Cell surviving")
-    plt.savefig("SCRaMbLE_population/SE_mortality_vs_cell_survival.png", dpi=300, bbox_inches='tight')
-    plt.savefig("SCRaMbLE_population/SE_mortality_vs_cell_survival.svg", format='svg', dpi=300, bbox_inches='tight')
+    plt.scatter(mortality_range, cell_survival_list, s=12)
+    plt.ylabel("Percentage of cells (c) surviving (A)")
+    plt.xlabel("SCRaMbLE events (E) mortality rate (m)")
+    plt.title("SCRaMbLE events mortality vs percentage of cells surviving", fontsize=MEDIUM_SIZE)
+    #plt.xlim(0, 1)
+    #plt.ylim(0, 1)
+    plt.savefig("SCRaMbLE_population/SE_mortality_vs_cell_survival2.png", dpi=300, bbox_inches='tight')
+    plt.savefig("SCRaMbLE_population/SE_mortality_vs_cell_survival2.svg", format='svg', dpi=300, bbox_inches='tight')
     plt.show()
     plt.close()
     return None
@@ -177,7 +180,7 @@ def plot_Dic2(myDictionary, file_name="SCRaMbLEd_cells"):
     return None
 
 def plot_Dic_survivor(myDictionary, myDictionary2, file_name="survivor_SCRaMbLEd_cells", mortality_rate=0.5, Show=False):
-    mortality_rate = round(mortality_rate, 1)
+    mortality_rate = round(mortality_rate, 2)
     # myDictionary = All cells, myDictionary2 = survivor cells
     # Count how many cells survived
     survivors_percentage = sum(myDictionary2.values())
@@ -323,9 +326,8 @@ if __name__ == "__main__":
     
     #plot_Dic_survivor(Cell[1], survivor, "survivor")
     #death_rate_by_SCRaMbLE_plot(1, 8, 0.7)
-    range_list = [round(x * 0.1, 1) for x in range(0, 11)]
-    for i in range_list:
-        death_rate_by_SCRaMbLE_plot(1, 8, survivor_rate=i)
+    for i in np.arange(0.0, 1.05, 0.1):
+        death_rate_by_SCRaMbLE_plot(initial_cells=1, number_replication=8, survivor_rate=i)
     #plot_Dic2(Cell[1], "SCRaMbLEd_cells")
     #plot_Dic2(survivor, "survivor")
     #"""

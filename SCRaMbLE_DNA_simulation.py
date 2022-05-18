@@ -1,16 +1,17 @@
 import random
 from comparison_sol import invert
+#from Mapping_coverage_MM import number_LU
 from SCRaMbLE_simulation_3_circular import smallest_SV
 import numpy as np
 import matplotlib.pyplot as plt
 
 #segments = 100  #number of loxP segments
 
-#SCRaMbLEd_chr = list(range(1, segments, 1))
+#SCRaMbLEd_chr = list(range(1, segments+1, 1))
 
 #SCRaMbLEd_chr = [1, 2, 3, 4, 5, 6, -8, -7, 9, 10, 11, 12, -8, -7, 9, 10, 11, 12, 13, 14, 15, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 43, 44, 2, 3, 4, 5, 6, -8, -7, 9, 10, 11, 12, 13, 14, 15, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44]
 
-# 1 LoxP unit = 2.9Kb
+# 1 LoxP unit = 2.88 Kb
 
 
 def DNA_extraction_any_L(syn_chr, coverage):
@@ -187,13 +188,17 @@ def plot_Dic(myDictionary):
 
 def plot_Dic2(myDictionary):
     # Plot
-    plt.figure(figsize=(7, 3), dpi=300)
+    plt.figure(figsize=(7.5, 3), dpi=300)
     plt.bar(myDictionary.keys(), myDictionary.values(), align='center')
-    #plt.xticks(range(max(myDictionary.keys()) +1), range(max(myDictionary.keys())+1))
+    #plt.xlim(0.000001, max(myDictionary.keys()) + 1)
+    #plt.xlim(-2, 103)
+    #plt.ylim(0, 1.1)
+    plt.xticks(range(1, max(myDictionary.keys()) +1), range(1, max(myDictionary.keys())+1), fontsize=4.5)
+    plt.xticks(rotation=90)    # Use this for chromosomes longer than 100
     #plt.ylabel("Number of LUs in the reads")
     #plt.ylabel("Percentage of LU CN compared to the total number of LUs")
     #plt.ylabel("Percentage of LU CN in the reads")
-    plt.ylabel("Coverage")  # CN in the reads
+    plt.ylabel("Percentage (%)")  # "Coverage", "CN in the reads"
     plt.xlabel("LU")
     plt.title("Coverage")   # "Coverage (k reads)"
     #plt.text(max(R_L.keys()) * 0.8, Mx_value * 0.9,"Reads length mean =" + str(reads_length_mean) + "\n" + "Reads length median =" + str(reads_length_median) + "\n" + "N50 =" + str(N50))
@@ -211,17 +216,33 @@ def divide_dictionary(Dic1, divisor):
     Dic_divided = {Dic_keys[i]: Dic_values[i] for i in range(len(Dic_keys))}
     return Dic_divided
 
+# Function from Mapping_coverage_MM
+# Count the number of LUs in a list of reads.
+def number_LU(reads):
+    sum_LU = 0
+    for read in reads:
+        sum_LU = sum_LU + len(read)
+    return sum_LU
+
+def plot_chr_coverage(Chr, coverage=10000, mu=8, sigma=3, circular=False):
+    # Simulate reads
+    #sim_reads = DNA_extraction_coverage(Chr, coverage, reads_len=reads_len, sigma=sigma, circular=True)
+    sim_reads = DNA_extraction(Chr, reads=coverage, mu=mu, sigma=sigma, circular=circular)
+    # calculate the coverage
+    cov = coverage2(sim_reads, Chr)
+    # Calculate the number of LUs into the reads
+    num_LUs = number_LU(sim_reads)
+    #cov_percentage = divide_dictionary(cov, coverage)
+    #cov_percentage = divide_dictionary(cov, 1000)  # divide by 1,000 to have thousands of reads
+    cov_percentage = divide_dictionary(cov, num_LUs/100)    # /100 to have the results in percentage
+    print("cov =", cov)
+    print("cov_percentage =", cov_percentage)
+    plot_Dic2(cov)
+    plot_Dic2(cov_percentage)
+    return None
+
 # test the code
 if __name__ == "__main__":
     syn_chr = list(range(1, 101, 1))
-    coverage = 100000
-    #DNA = DNA_extraction_coverage(syn_chr, coverage, reads_len=8, sigma=3, circular=True)
-    DNA = DNA_extraction(syn_chr, coverage, mu=8, sigma=3, circular=False)
-    cov = coverage2(DNA, syn_chr)
-    cov_percentage = divide_dictionary(cov, coverage)
-    print("cov =", cov)
-    print("cov_percentage =", cov_percentage)
-    #plot_Dic(cov)
-    plot_Dic2(cov)
-    #cov_percentage = divide_dictionary(cov, 1000)
-    plot_Dic2(cov_percentage)
+    coverage = 1000000
+    plot_chr_coverage(syn_chr, coverage=coverage, mu=8, sigma=3, circular=False)

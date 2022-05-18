@@ -70,8 +70,19 @@ def deletion_essential(pos1, pos2, syn_chr, essential=[]):
     else:
         return new_chr
 
-# Synthetic lethal interactions
+# Synthetic lethal interactions. These are genes that are redundant, they are non-essentials but if another genes is missing, they could become essentials.
 
+def syn_lethal_interactions(syn_chr, pairs=[[]]):
+    for P in pairs:
+        # If at least one of the LUs in the pair P is present in the chromosome syn_chr, so the cell is viable
+        viable = not(all(elem not in syn_chr for elem in P))
+        print(P, viable)
+        if viable is False:
+            return False
+    return True
+#syn_chr = [1,2,3,4,5,6,7]
+#pairs = [[2,5], [3,1,5], [4,8], [8,10]]
+#print(syn_lethal_interactions(syn_chr, pairs=pairs))
 
 def inversion(pos1, pos2, syn_chr):
     if pos1 > pos2:

@@ -307,6 +307,37 @@ def count_LU_CN(Chr, Max_LU=0):
         LU_CN[LU] += 1
     return LU_CN
 
+def count_essential_LU_CN(Chr, essential=[], Max_LU=0):
+    if Chr == []:
+        return 0, 0
+    essential_LUs = []
+    non_essential_LUs = []
+    if isinstance(Chr[0], int):
+        # make all the LU positive
+        new_chr = [abs(x) for x in Chr]
+        if Max_LU < max(new_chr):
+            Max_LU = max(new_chr)
+        # create a list of all different LUs
+        different_LUs = list(range(1, Max_LU + 1))
+        #different_LUs = list(dict.fromkeys(new_chr))
+        #different_LUs.sort()
+        # count the LU
+        for LU in different_LUs:      # Note the LU should be already positive
+            if LU in essential:
+                essential_LUs.append(new_chr.count(LU))
+            else:
+                non_essential_LUs.append(new_chr.count(LU))
+        return essential_LUs, non_essential_LUs
+    else:
+        # There are multiple chromosomes. Put all the copy number in the same list
+        for Chr_temp in Chr:
+            essential_LUs_temp, non_essential_LUs_temp = count_essential_LU_CN(Chr_temp, essential=essential)
+            #essential_LUs.append(essential_LUs_temp)
+            #non_essential_LUs.append(non_essential_LUs_temp)
+            essential_LUs = essential_LUs + essential_LUs_temp
+            non_essential_LUs = non_essential_LUs + non_essential_LUs_temp
+        return essential_LUs, non_essential_LUs
+
 def find_max_value(Chrs):
     MAX = 0
     for Chr in Chrs:
@@ -355,7 +386,7 @@ def plot_LU_CN(Chrs, Plot="histogram", essential=[], CEN=[]):
         LU_CN_mean[key] = statistics.mean(value)
         LU_CN_SD[key] = statistics.stdev(value)
     # Plot
-    plt.figure(figsize=(20, 10))
+    plt.figure(figsize=(7, 3.5), dpi=300)
     if Plot == "boxplot":
         plt.boxplot(LU_CN_TOT.values(), labels=LU_CN_TOT.keys(), showfliers=True, showmeans=True)
     elif Plot == "violinplot":
@@ -428,7 +459,7 @@ def plot_LU_CN_percentage(Chrs, max_CN=5, essential=[], CEN=[], filename="", SE=
     n_SE = ""
     if SE != "":
         n_SE = ". SE = " + str(SE)
-    plt.title("Percentage of LU CN" + n_SE)
+    plt.title("Percentage of LU CN" + n_SE, fontsize=MEDIUM_SIZE)
     plt.legend(loc=3)
     if filename != "":
         plt.savefig("SCRaMbLE_evolution_percentage_LU/percentage_LU_CN_" + filename + ".png", dpi=300, bbox_inches='tight')
@@ -452,7 +483,26 @@ def SCRaMbLE_SIM_LU_CN(syn_chr, events=100, simulations=1000, essential=[], CEN=
             snapshots_SCRaMbLEd.append(SCRaMbLEd_chrs[:])
         for s in range(simulations):
             # Perform SCRaMbLE on the synthetic chromosome
-            SCRaMbLEd_chrs[s] = force_SCRaMLE_lin_cir(SCRaMbLEd_chrs[s], 1, essential=essential, circular=circular, mu=mu, sigma=sigma, CEN=CEN, force=force, probability=probability)
+            SCRaMbLEd_chrs[s] = force_SCRaMLE_lin_cir(SCRaMbLEd_chrs[s], Number_events=1, essential=essential, circular=circular, mu=mu, sigma=sigma, CEN=CEN, force=force, probability=probability)
+    # Plot the essential and non-essential LU CN
+    MAX_LU = max([abs(x) for x in syn_chr])
+    # I excluded the centromere from the list of essential as the centromere has always CN of one.
+    essential_no_centromere = essential[:]
+    essential_no_centromere.remove(CEN[0])
+    #essential_LUs, non_essential_LUs = count_essential_LU_CN(SCRaMbLEd_chrs, essential=essential_no_centromere, Max_LU=MAX_LU)
+    essential_LUs, non_essential_LUs = count_essential_LU_CN(snapshots_SCRaMbLEd[-1], essential=essential_no_centromere, Max_LU=MAX_LU)
+    #print("essential_LUs     =", essential_LUs)
+    #print("non_essential_LUs =", non_essential_LUs)
+    plt.figure(figsize=(7, 3.5), dpi=200)
+    plt.ylabel("LU CN")
+    plt.title("essential vs non-essential LU CN")
+    Labels = ["essential LU CN", "non-essential LU CN"]
+    plt.axhline(y=0, color="grey", linestyle="-", alpha=0.3)
+    plt.boxplot([essential_LUs, non_essential_LUs], labels=Labels, showfliers=False)  # Hide outliners: showfliers=False
+    #plt.violinplot([essential_LUs, non_essential_LUs])
+    plt.show()
+    plt.close()
+
     # Plot
     # These are some information to add to the saved files.
     # Create a random seed to save the image
@@ -503,7 +553,7 @@ if __name__ == "__main__":
     R_L_values = [x/number_reads for x in R_L.values()]
     #R_L_keys = [x for x in R_L.keys()]
     R_L_keys = list(R_L.keys())
-    R_L_percentage= {R_L_keys[i]: R_L_values[i] for i in range(len(R_L_keys))}
+    R_L_percentage = {R_L_keys[i]: R_L_values[i] for i in range(len(R_L_keys))}
     print("R_L =", R_L)
     print("R_L_percentage =", R_L_percentage)
     plot_read_length2(S_path)

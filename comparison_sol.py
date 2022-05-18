@@ -814,6 +814,31 @@ def NG50_calculator(Chr):
 #Chr_a = NG50_calculator(Chr)
 #print(Chr_a)
 
+# I use this function to calculate the non-essential LUs half-life in a SCRaMbLE experiment. From the number of different LUs I need to subtract the constant number of essential LUs.
+def half_life(points: list, minus_constant=0, out_two_points=False):
+    if points == []:
+        return 0
+    if isinstance(points[0], list):
+        return 0
+    half_life_list = []
+    #half_life = (points[0] - minus_constant) / 2
+    half_life = points[0] - ((points[0] - minus_constant) / 2)
+    points_list = [half_life]
+    for i in range(len(points)):
+        if points[i] <= half_life:
+            half_life_list.append(i)
+            #half_life = half_life / 2
+            half_life = half_life - ((half_life - minus_constant) / 2)
+            points_list.append(half_life)
+    if out_two_points:
+        return half_life_list, points_list
+    else:
+        return half_life_list
+#points = list(range(1, 101, 1))
+#points = [101-x for x in points]
+#print(half_life(points))
+#print(half_life(points, out_two_points=True))
+
 def essential_ratio_calculator(chromosome: int, essential=[]):
     if chromosome == []:
         return 0

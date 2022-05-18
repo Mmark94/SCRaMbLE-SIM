@@ -36,9 +36,10 @@ def plot_chr_len(SCRaMbLEd_events, chr_len, L_unique=[[]], LG50=[[]], num_essent
     MAX_values = max(all_points) + Max_SD_chr_len
 
     plt.ylim([0, MAX_values + 5])
-    plt.ylabel("Chr length mean over " + str(simulations) + " simulations")
+    #plt.ylabel("Chr length mean over " + str(simulations) + " simulations")
+    plt.ylabel("Average number of LUs")
     plt.xlabel("SCRaMbLEd events")
-    plt.title("Chr length over SCRaMbLE events", fontsize=9)
+    #plt.title("Chr length over SCRaMbLE events", fontsize=9)
 
     plt.plot(0,0, label="Chr len", color="tab:blue")
     plt.plot(0,0, label="No. unique LUs", color="tab:orange")   #label="Len unique"
