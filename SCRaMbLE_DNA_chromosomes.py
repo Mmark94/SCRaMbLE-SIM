@@ -7,7 +7,7 @@ import argparse
 
 
 # SCRaMbLE chromosomes sequences as DNA and output SCRaMbLEd chromosomes DNA.
-
+# This is not finished
 def SCRaMbLE_DNA(filename="IXR_BACnewseq.fa", ID="", starting_LU=1, segment_size=1000, min_segment_size=100, mapping_breakpoints={}, RANDOM=False, random_cuts=100):
     # Cut the DNA in segments
     cut_reference_in_segments(filename=filename, ID=ID, starting_LU=starting_LU, segment_size=segment_size, min_segment_size=min_segment_size, mapping_breakpoints=mapping_breakpoints, RANDOM=RANDOM, random_cuts=random_cuts)

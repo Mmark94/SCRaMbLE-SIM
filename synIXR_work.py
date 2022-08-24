@@ -48,3 +48,46 @@ plt.boxplot([essential_LUs, non_essential_LUs], labels=Labels, showfliers=True)
 plt.show()
 plt.close()
 
+
+# Statistics
+from comparison_sol import NG50_calculator
+import statistics
+import numpy as np
+
+# Statistics on the chromosomes
+chr_len_L = []
+len_unique_L = []
+NG50_L = []
+LG50_L = []
+duplication_rate = []
+for CHR in solution:
+    #if isinstance(CHR[0], list):
+    #    CHR = CHR[0]
+    CHR_stats = NG50_calculator(CHR)
+    chr_len_L.append(CHR_stats[0])
+    len_unique_L.append(CHR_stats[1])
+    NG50_L.append(CHR_stats[2])
+    LG50_L.append(CHR_stats[3])
+    duplication_rate.append(CHR_stats[5])
+print()
+print("chr_len_L =", statistics.mean(chr_len_L), "+-", statistics.stdev(chr_len_L), ". Percentiles =", np.percentile(chr_len_L, [25, 50, 75]))
+print("len_unique_L =", statistics.mean(len_unique_L), "+-", statistics.stdev(len_unique_L), ". Percentiles =", np.percentile(len_unique_L, [25, 50, 75]))
+print("NG50_L =", statistics.mean(NG50_L), "+-", statistics.stdev(NG50_L), ". Percentiles =", np.percentile(NG50_L, [25, 50, 75]))
+print("LG50_L =", statistics.mean(LG50_L), "+-", statistics.stdev(LG50_L), ". Percentiles =", np.percentile(LG50_L, [25, 50, 75]))
+print("duplication_rate =", statistics.mean(duplication_rate), "+-", statistics.stdev(duplication_rate), ". Percentiles =", np.percentile(duplication_rate, [25, 50, 75]))
+
+"""
+ALL synIXR
+chr_len_L = 49.17460317460318 +- 28.765761279990645 . Percentiles = [36.  40.  50.5]
+len_unique_L = 35.698412698412696 +- 4.726844820381264 . Percentiles = [34. 37. 39.]
+NG50_L = 1.5873015873015872 +- 1.4439520213068542 . Percentiles = [1. 1. 2.]
+LG50_L = 15.206349206349206 +- 3.4085221949559643 . Percentiles = [13. 17. 17.]
+duplication_rate = 1.4019840821385428 +- 0.9355965777733104 . Percentiles = [1.         1.         1.51923077]
+
+Only synIXR unsolved by short reads
+chr_len_L = 64.48148148148148 +- 38.94312457375437 . Percentiles = [41.5 54.  70. ]
+len_unique_L = 34.592592592592595 +- 5.930749461390961 . Percentiles = [31.5 36.  39. ]
+NG50_L = 2.3333333333333335 +- 1.9806758753205742 . Percentiles = [1. 2. 2.]
+LG50_L = 12.925925925925926 +- 3.6047610176406972 . Percentiles = [10. 13. 16.]
+duplication_rate = 1.8922559183954804 +- 1.2766803020611441 . Percentiles = [1.21111111 1.55882353 1.90541872]
+"""

@@ -522,6 +522,30 @@ def SCRaMbLE_muliple_chrs_events(list_chr: list, Number_events=10, essential=[],
 #print(SCRaMbLE_muliple_chrs(A))
 #print(SCRaMbLE_muliple_chrs_events(A, 20, [3,10,13], 7, 7, [3,10,13]))
 
+# This function simulates SCRaMbLE evolution where you insert a selective marker in one or more LUs and after a number of SCRaMbLE event, you select for the deletion of the marker.
+def select_SCRaMLE_evo(syn_chr: list, Number_events: int, essential=[], circular=False, SEs_before_selection=10, LUs_selection=[], mu=0, sigma=7, CEN=[], force=True, probability=[0, 2, 2, 1]):
+    new_chr2 = syn_chr[:]
+    rounds_selection = round(Number_events / SEs_before_selection)
+    print("rounds_selection =", rounds_selection)
+    for _ in range(rounds_selection):
+        new_chr1 = new_chr2[:]
+        counter = 0         # the counter make sure the program do not get stuck and loop infinite times.
+        while new_chr1 == new_chr2 and counter < 20:
+            counter = counter + 1
+            new_chr2 = force_SCRaMLE_lin_cir(syn_chr=new_chr1, Number_events=SEs_before_selection, essential=essential, circular=circular, mu=mu, sigma=sigma, CEN=CEN, force=force, probability=probability)
+            # Check if the markers have been removed
+            new_chr2_abs = [abs(ele) for ele in new_chr2]
+            marker_removed = not(all(elem in new_chr2_abs for elem in LUs_selection))
+            #print(marker_removed, new_chr2_abs, LUs_selection)
+            if marker_removed is False:
+                # The markers were not removed. Repeat the SCRaMbLE evolution
+                # if new_chr1 == new_chr2 the loop will continue
+                new_chr2 = new_chr1[:]
+            #else:
+            #    print(new_chr2)
+            #    #print(counter)
+    return new_chr2
+
 
 # test the code
 if __name__ == "__main__":
@@ -539,3 +563,5 @@ if __name__ == "__main__":
         print()
 
     #plot_events_length(events=1000000, mu=0, sigma=10)
+
+    #print(select_SCRaMLE_evo(syn_chr=syn_chr, Number_events=30, essential=essential, circular=False, SEs_before_selection=5, LUs_selection=[27, 40], mu=0, sigma=7, CEN=[], force=True, probability=[0, 2, 2, 1]))
