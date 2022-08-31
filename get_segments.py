@@ -109,7 +109,6 @@ if __name__ == '__main__':
     # IXR_BACnewseq_test.fa has two synIXR chromosomes
     #cut_reference_in_segments(filename="IXR_BACnewseq_test.fa", segment_size=3000, min_segment_size=500)
     #cut_reference_in_segments(filename="SynIII-KC880027.1.fasta")
-    #print(sorted(random.sample(range(1, 100000, 1), k=100)))
 
     parser = argparse.ArgumentParser(description="Cut the reference chromosomes in segments of a define length.")
     # metavar=""

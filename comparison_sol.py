@@ -651,10 +651,11 @@ def mapping(solution, path):
         c = c + 1
     return False
 
+# Check if the read map inside the solution. The output is True or False
 def mapping_every_points_true(solution: list, path: list):
     if solution == [] or path == []:
         return False
-    T=0
+    T = 0
     while T < len(solution):
         solution_new_start = start_index(solution, T)
         if mapping(solution_new_start, path):
@@ -757,24 +758,6 @@ def check_sol_threshold(solutions, paths, threshold=0):
 #print(check_sol_threshold(sol, paths, threshold=0))
 #print(check_sol_threshold(sol, paths, threshold=1))
 
-#JS599 = [[1, 2, 3, 4, -7, 5, 35, 38, 39, 41, 43, 43, 44], [1, 2, 3, 4, -7, 5, 37, 38, 39, 41, 42, 44, 44], [1, 2, 3, 4, -7, 5, 37, 38, 39, 41, 42, 43, 44], [-33, -32, 29, 30, -22, -20, -19, -7, 8, 9, 10, 11, 12], [1, -12, -11, -10, -9, -8, 7, 19, 20, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 38, 39, 41, 43, 44], [-12, -11, -10, -9, -8, 7, 19, 20, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 38, 39, 41, 43, 44, 44], [2, 3, 4, 5, 36, 37, 38, 39, 41, 42, 43, 44, 44], [36, 37, 37, 39, 41, 42, 43, 44], [11, 8, 9, 10, 12, 19, 20, -31, -30, -29, 32, 33, 36], [1, 4, 5, -6, 44]]
-#JS599_paths = [[27, 29, 30, 31, 32, 33, 34, 35, 38, 39, 41, 43, 44], [22, 23, 24, 25, 26, 27, 29, 30, 31, 32], [19, 20, 22, 23, 24, 25, 26, 27, 29, 30], [-11, -10, -9, -8, 7, 19, 20, 22, 23, 24], [9, 10, 12, 19, 20, -31, -30, -29], [20, -31, -30, -29, 32, 33, 36], [11, 8, 9, 10, 12, 19], [1, 2, 3, 4, -7, 5], [44, 1, 4, 5, -6], [25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 38, 39, 41, 43], [35, 38, 39, 41, 43, 43, 44, 1, 2, 3, 4], [30, 31, 32, 33, 34, 35, 38, 39, 41, 43, 44, 44], [24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35], [36, 37, 38, 39, 41, 42, 43, 44, 44], [37, 38, 39, 41, 42, 43, 44, 44, 2, 3, 4], [37, 38, 39, 41, 42, 44, 44, 1, 2, 3, 4], [37, 38, 39, 41, 42, 43, 44, 1, 2, 3, 4], [2, 3, 4, 5], [-12, -11, -10, -9, -8, 7, 19, 20, 22], [7, 19, 20, 22, -30, -29, 32, 33], [34, 35, 38, 39, 41, 43, 44, 1], [36, 37, 37, 39, 41, 42, 43], [37, 39, 41, 42, 43, 44]]
-#JS599_clean = check_sol(JS599, JS599_paths)
-#print(JS599)
-#print(JS599_clean)
-
-#JS599 = [[1, 2, 3, 4, -7, 5, 35, 38, 39, 41, 43, 43, 44], [1, 2, 3, 4, -7, 5, 37, 38, 39, 41, 42, 44, 44], [1, 2, 3, 4, -7, 5, 37, 38, 39, 41, 42, 43, 44], [-33, -32, 29, 30, -22, -20, -19, -7, 8, 9, 10, 11, 12], [1, -12, -11, -10, -9, -8, 7, 19, 20, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 38, 39, 41, 43, 44], [-12, -11, -10, -9, -8, 7, 19, 20, 22, 23, 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 38, 39, 41, 43, 44, 44], [2, 3, 4, 5, 36, 37, 38, 39, 41, 42, 43, 44, 44], [36, 37, 37, 39, 41, 42, 43, 44], [11, 8, 9, 10, 12, 19, 20, -31, -30, -29, 32, 33, 36], [1, 4, 5, -6, 44]]
-#JS599_paths = [[27, 29, 30, 31, 32, 33, 34, 35, 38, 39, 41, 43, 44], [22, 23, 24, 25, 26, 27, 29, 30, 31, 32], [19, 20, 22, 23, 24, 25, 26, 27, 29, 30], [-11, -10, -9, -8, 7, 19, 20, 22, 23, 24], [9, 10, 12, 19, 20, -31, -30, -29], [20, -31, -30, -29, 32, 33, 36], [11, 8, 9, 10, 12, 19], [1, 2, 3, 4, -7, 5], [44, 1, 4, 5, -6], [25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 38, 39, 41, 43], [35, 38, 39, 41, 43, 43, 44, 1, 2, 3, 4], [30, 31, 32, 33, 34, 35, 38, 39, 41, 43, 44, 44], [24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35], [36, 37, 38, 39, 41, 42, 43, 44, 44], [37, 38, 39, 41, 42, 43, 44, 44, 2, 3, 4], [37, 38, 39, 41, 42, 44, 44, 1, 2, 3, 4], [37, 38, 39, 41, 42, 43, 44, 1, 2, 3, 4], [2, 3, 4, 5], [-12, -11, -10, -9, -8, 7, 19, 20, 22], [7, 19, 20, 22, -30, -29, 32, 33], [34, 35, 38, 39, 41, 43, 44, 1], [36, 37, 37, 39, 41, 42, 43], [37, 39, 41, 42, 43, 44]]
-#JS599_clean = extract_paths_from_sol(JS599[0], JS599_paths)
-#print(JS599)
-#print(JS599_clean[0])
-#print(JS599_clean[1])
-
-#JS603 = [[-1, -44, -43, -42, -41, -40, -39, 7, 8, 9, 10, 11, 12, 16, 17, 18, 19, 20, 20, 22, 23, -24, 25, 26, 16, 17, 18, 19, 20, 22, 23, -24, 25, 26, 27, -36, -37, 28, 29, 30, 31, 32, 33, -4, -3, -2, 28, 29, 30, 31, -41, -40, 7, 8, 9, 10, 11, -12, 16, 17, 18, 19, 20, 21, 22, 23, -24, 25, 26, 27, 28, 29, 30, 36, 37, 38, -6, -5, -4, -3, -2], [-1, -44, -43, -42, -41, -40, -39, 7, 8, 9, 10, 11, 12, 16, -44, -44, -43, -42, -41, -40, -39, 7, 8, 9, 10, 11, 12, 16, 17, 18, 19, 20, 20, 22, 23, -24, 25, 26, 27, -36, -37, 28, 29, 30, 31, 32, 33, -4, -3, -2, 28, 29, 30, 31, -41, -40, 7, 8, 9, 10, 11, -12, 16, 17, 18, 19, 20, 21, 22, 23, -24, 25, 26, 27, 28, 29, 30, 36, 37, 38, -6, -5, -4, -3, -2]]
-#JS603_paths = [[17, 18, 19, 20, 21, 22, 23, -24, 25, 26, 27, 28, 29, 30, 36, 37, 38, -6, -5, -4, -3], [18, 19, 20, 22, 23, -24, 25, 26, 27, -36, -37, 28, 29, 30, 31, 32, 33, -4], [17, 18, 19, 20, 22, 23, -24, 25, 26, 27, -36, -37, 28, 29, 30], [16, 17, 18, 19, 20, 22, 23, -24, 25, 26, 27, -36, -37, 28], [32, 33, -4, -3, -2, 28, 29, 30, 31, -41, -40, 7], [37, 38, -6, -5, -4, -3, -2, -1, -44], [-44, -44, -43, -42, -41, -40, -39, 7], [-41, -40, 7, 8, 9, 10, 11], [-44, -43, -42, -41, -40, -39, 7, 8, 9, 10, 11, 12, 16, 17, 18, 19, 20, 20, 22, 23, -24, 25, 26], [20, 22, 23, -24, 25, 26, 27, -36, -37, 28, 29, 30, 31, 32, 33, -4, -3], [7, 8, 9, 10, 11, -12, 16, 17, 18, 19, 20, 21, 22, 23, -24, 25, 26, 27, 28, 29], [-4, -3, -2, -1, -44, -43, -42, -41, -40, -39, 7, 8, 9, 10, 11, 12, 16], [30, 31, 32, 33, -4, -3, -2, 28, 29]]
-#JS603_cleaned = check_sol(JS603, JS603_paths)
-#print(JS603)
-#print(JS603_cleaned)
 #sol = [1,2,3,4,5,6,7,8,9,10,11]
 #sol = [[1,2,3,4,5,6,7,8,9,10,11],[1,2,3,4,5,6,7,8,9,10,11,12]]
 #x = [[1,2,3,4], [3,4,5,6,7,8], [1,2,3,4,5,6,7,8,9,10,11],[],[2,3,4],[4,5,6,7,9]]
@@ -787,61 +770,42 @@ def check_sol_threshold(solutions, paths, threshold=0):
 #print(check_sol(sol, x))
 
 
-def NG50_calculator(Chr):
-    if Chr == []:
-        return 0, 0,  0, 0, 0, 0
+
+# LG50 = how many unique LUs are necessary to reach half of the length of the chromosome.
+# NG50 = the copy number of the LG50th LU.
+
+def NG50_calculator(Chr: list, N=0.50):
+    # Sign is not important for these statistics
     new_chr = [abs(x) for x in Chr]
     new_chr = sorted(new_chr)
+    # Sort the LUs in the chromosome so that the more frequent are the first (higher copy number).
     new_chr = sorted(new_chr, key=new_chr.count, reverse=True)
+    # Create a list with only the LUs that are unique
     unique = list(dict.fromkeys(new_chr))
     #print("new_chr =", new_chr)
     #print("unique =", unique)
-    N50 = round(len(new_chr)/2)
+    # N=0.50 : N50. N=0.25 : N25 N=0.75 : N75
+    N50 = round(len(new_chr) * N)
     counter = 0
     cumulative = 0
     while cumulative < N50:
+        # unique[counter] is always a different LU. And the LUs are ordered by their copy number.
+        #print("unique[counter] =", unique[counter])
         cumulative = cumulative + new_chr.count(unique[counter])
         #print("cumulative =", cumulative)
         counter = counter + 1
     NG50 = new_chr.count(unique[counter - 1])
     LG50 = counter - 1
-    # Easy duplication rate
+    # Easy duplication rate. It can also be called "mean LU copy number".
     #duplication_rate = 1 - (len(unique) / len(new_chr))
     duplication_rate = len(new_chr) / len(unique)
-    return len(new_chr), len(unique),  NG50, LG50, LG50 / len(unique), duplication_rate
+    return len(new_chr), len(unique), NG50, LG50, LG50 / len(unique), duplication_rate
 
 #Chr = [1,2,2,3,4,6,13,1,5,9,16,4,7,4,4,5,6,-3,7,8,8,2,8,-11,8,9,10,11,11,12]
 #Chr_a = NG50_calculator(Chr)
 #print(Chr_a)
 
-# I use this function to calculate the non-essential LUs half-life in a SCRaMbLE experiment. From the number of different LUs I need to subtract the constant number of essential LUs.
-def half_life(points: list, minus_constant=0, out_two_points=False):
-    if points == []:
-        return 0
-    if isinstance(points[0], list):
-        return 0
-    half_life_list = []
-    #half_life = (points[0] - minus_constant) / 2
-    half_life = points[0] - ((points[0] - minus_constant) / 2)
-    points_list = [half_life]
-    for i in range(len(points)):
-        if points[i] <= half_life:
-            half_life_list.append(i)
-            #half_life = half_life / 2
-            half_life = half_life - ((half_life - minus_constant) / 2)
-            points_list.append(half_life)
-    if out_two_points:
-        return half_life_list, points_list
-    else:
-        return half_life_list
-#points = list(range(1, 101, 1))
-#points = [101-x for x in points]
-#print(half_life(points))
-#print(half_life(points, out_two_points=True))
-
 def essential_ratio_calculator(chromosome: int, essential=[]):
-    if chromosome == []:
-        return 0
     essential = [abs(x) for x in essential]
     chr_L = len(chromosome)
     num_essential = 0
@@ -852,22 +816,26 @@ def essential_ratio_calculator(chromosome: int, essential=[]):
     return num_essential / chr_L
 
 # This function calculate the base pairs length of path/solution or subpaths.
-def solution_to_bps_size(solution: list):
+def solution_to_bps_size(solution: list, LU_size={}):
     if solution == [] or solution == [[]]:
-        return 0
-    syn9R_LU_size = {1: 6375, 2: 688, 3: 1305, 4: 5549, 5: 1628, 6: 849, 7: 5111, 8: 2546, 9: 1895, 10: 5185, 11: 1835, 12: 1644, 13: 157, 14: 1830, 15: 244, 16: 4041, 17: 4716, 18: 944, 19: 3259, 20: 4337, 21: 178, 22: 1964, 23: 134, 24: 1420, 25: 4155, 26: 1496, 27: 228, 28: 1008, 29: 2048, 30: 4475, 31: 176, 32: 1444, 33: 1081, 34: 1585, 35: 216, 36: 2428, 37: 4101, 38: 2924, 39: 954, 40: 997, 41: 1803, 42: 984, 43: 1005, 44: 9386}
+        return [0]
+    if LU_size == {}:
+        # synIXR
+        LU_size = {1: 6375, 2: 688, 3: 1305, 4: 5549, 5: 1628, 6: 849, 7: 5111, 8: 2546, 9: 1895, 10: 5185, 11: 1835, 12: 1644, 13: 157, 14: 1830, 15: 244, 16: 4041, 17: 4716, 18: 944, 19: 3259, 20: 4337, 21: 178, 22: 1964, 23: 134, 24: 1420, 25: 4155, 26: 1496, 27: 228, 28: 1008, 29: 2048, 30: 4475, 31: 176, 32: 1444, 33: 1081, 34: 1585, 35: 216, 36: 2428, 37: 4101, 38: 2924, 39: 954, 40: 997, 41: 1803, 42: 984, 43: 1005, 44: 9386}
 
     solution_Kb = 0
-    if isinstance(solution[0], int):
+    if isinstance(solution[0], int) or solution[0] == "*":
         for LU in solution:
-            solution_Kb = solution_Kb + syn9R_LU_size[abs(LU)]
+            if LU == "*":
+                continue
+            solution_Kb = solution_Kb + LU_size[abs(LU)]
         return [solution_Kb]
     else:
         solution_bps_list = []
         for sol in solution:
             if sol == []:
                 continue
-            sol_L = solution_to_bps_size(sol)
+            sol_L = solution_to_bps_size(solution=sol, LU_size=LU_size)
             solution_bps_list = solution_bps_list + sol_L
         return solution_bps_list
 
