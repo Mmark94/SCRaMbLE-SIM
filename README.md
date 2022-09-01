@@ -58,7 +58,7 @@ SCRaMbLE-SIM allows the simulation of SCRaMbLE with essential LUs and the centro
 force_SCRaMLE_lin_cir_events(syn_chr: list, Number_events: int, essential=[], circular=False, mu=0, sigma=7, CEN=[], force=True, probability=[0, 2, 2, 1], event_type=False)
 ```
 
-I am also working on the script SCRaMbLE_DNA_chromosomes.py which will take as input a genome in fasta file and output a SCRaMbLEd genome in a fasta file. However, this script is not finished yet.
+I am also working on the script SCRaMbLE_DNA_chromosomes.py which will take as input a genome in fasta file and output a SCRaMbLEd genome in a fasta file.
 
 
 ### <a name="reads_SIM"></a>Simulation of long sequencing reads
@@ -73,7 +73,7 @@ All the essential functions for simulating long sequencing reads are in the scri
 DNA_extraction_coverage(syn_chr, coverage: int, reads_len=8, sigma=3, circular=False)
 ```
 
-I am also working on the script simulate_reads.py which will take as input a genome in fasta file and output simulated long reads in a fasta file. However, this script is not finished yet.
+I am also working on the script simulate_reads.py which will take as input a genome in fasta file and output simulated long reads in a fasta file.
 
 ### <a name="CN"></a>Genome composition and segment copy number analysis
 Using simulated chromosomes, it is possible to investigate the fate of LUs during SCRaMbLE evolution. This means studying which segments are easier to be lost or to be conserved
