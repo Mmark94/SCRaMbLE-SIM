@@ -498,6 +498,12 @@ def chr_len_probabilities_range_SCRaMbLE(syn_chr=50, events=15, simulations=100,
 # test the code
 if __name__ == "__main__":
 
+    import os
+    # Create the folder where the output will be created
+    if not os.path.exists("SCRaMbLE_chr_len"):
+        os.makedirs("SCRaMbLE_chr_len")
+
+    # Test the chromosome length evolution under SCRaMbLE evolution
     syn_chr = list(range(1, 45, 1))
     essential = [2, 7, 9, 10, 12, 20]
     #essential = [2, 7, 9, 10, 12, 19, 20, 24]  # LUs 19 and 24 are not essential but required for fast growth. Deletion of LU 6 can also generate some slow growth phenotype.
@@ -507,8 +513,9 @@ if __name__ == "__main__":
     CEN = [2]
     events = 1000
     simulations = 1000
-    #plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=True, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], SD=True)
+    plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=True, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], SD=True)
 
+    # Try a different chromosome with 100 LUs
     syn_chr = list(range(1, 101, 1))
     events = 750
     #plot_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=False, mu=0, sigma=10, force=True, probability=[0, 4, 4, 1], SD=True)
@@ -520,7 +527,7 @@ if __name__ == "__main__":
 
     #plot_mean_SCRaMbLE_chr_len(syn_chr, events=events, simulations=simulations, essential=essential, CEN=CEN, circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1])
 
-    # chr_len_range_SCRaMbLE
+    # Test the impact of initial chromosome length on the chromosome length during SCRaMbLE evolution
     num_essential = 10
     simulations = 50
     # I set the essential LUs at random inside the function
@@ -534,7 +541,7 @@ if __name__ == "__main__":
     syn_chr = list(range(1, 51, 1))
     #chr_len_essential_range_SCRaMbLE(syn_chr, events=events, simulations=simulations, CEN=CEN, circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1])
 
-    # chr_len_probabilities_range_SCRaMbLE
+    # Test the impact of SCRaMbLE event type probabilities on the chromosome length during SCRaMbLE evolution
     syn_chr = list(range(1, 51, 1))
     num_essential = 10
     events = 250
