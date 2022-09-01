@@ -29,7 +29,7 @@ def SCRaMbLE_DNA(filename="IXR_BACnewseq.fa", ID="", synthetic=True, Number_SCRa
     # Convert the SCRaMbLEd paths into DNA
     # Create a random seed to save the image
     random_seed = str(random.random())[2:6]
-    path_to_DNA(path=SCRaMbLEd_chrs, LU_fasta=ID+".loxpreg.fa", filename=ID+"_SCRaMbLEd_"+str(Number_SCRaMbLE_events) + "_R" + str(random_seed), ID=ID+"_SCRaMbLEd")
+    path_to_DNA(path=SCRaMbLEd_chrs, LU_fasta=ID+".loxpreg.fa", filename=ID+"_SCRaMbLEd_SE"+str(Number_SCRaMbLE_events) + "_R" + str(random_seed), ID=ID+"_SCRaMbLEd")
     return None
 
 # test the code
@@ -43,7 +43,6 @@ if __name__ == '__main__':
     parser.add_argument("-ID", "--ID", type=str, required=False, default="", help="The name of the output file. If empty, the script will take the reference's filename before the dot (.)")
     parser.add_argument("-num_SE", "--Number_SCRaMbLE_events", type=int, required=True, default=15, help="How many SCRaMbLE events do you want to simulate?")
     parser.add_argument("-segment_size", "--segment_size", type=int, required=False, default=1000, help="The size of each segment. Default=1000")
-    parser.add_argument("-min_segment_size", "--min_segment_size", type=int, required=False, default=100, help="The minimal size of a segment. Default=100")
     parser.add_argument("-min_segment_size", "--min_segment_size", type=int, required=False, default=100, help="The minimal size of a segment. Default=100")
 
     args = parser.parse_args()
