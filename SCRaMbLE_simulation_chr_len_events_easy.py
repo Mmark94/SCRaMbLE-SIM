@@ -256,6 +256,7 @@ def plot_mean_SCRaMbLE_chr_len(syn_chr, events=15, simulations=100, essential=[]
     plot_chr_len(SCRaMbLEd_events, chr_len=A_result[0], L_unique=A_result[1], LG50=A_result[2], num_essential=len(essential), simulations=simulations, circular=circular, probability=probability, file_name=file_name)
     return None
 
+# This function plots the chromosome length over a SCRaMbLE evolution using different initial chromosome length.
 def chr_len_range_SCRaMbLE(events=15, simulations=100, essential=[], CEN=[], circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], file_name=""):
 
     #chr_len_range = list(range(25, 201, 25))
@@ -356,6 +357,7 @@ def chr_len_range_SCRaMbLE(events=15, simulations=100, essential=[], CEN=[], cir
     plt.close()
     return None
 
+# This function plots the chromosome length over a SCRaMbLE evolution using different number of essential LUs.
 def chr_len_essential_range_SCRaMbLE(syn_chr=50, events=15, simulations=100, CEN=[], circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], file_name=""):
 
     essential_range = list(range(0, 51, 10))
@@ -424,6 +426,7 @@ def chr_len_essential_range_SCRaMbLE(syn_chr=50, events=15, simulations=100, CEN
     plt.close()
     return None
 
+# This function plots the chromosome length over a SCRaMbLE evolution using different probabilities of deletions and duplications.
 def chr_len_probabilities_range_SCRaMbLE(syn_chr=50, events=15, simulations=100, essential=[], CEN=[], circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], file_name="", LOG=True):
 
     probabilities_range = [[0,4,4,1], [0,4,4,2], [0,4,4,4], [0,4,4,8], [0,4,4,16]]

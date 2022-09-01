@@ -29,7 +29,7 @@ This project is inspired by the Sc2.0 technique SCRaMbLE which allows stochastic
 SCRaMbLE-SIM can be applied to answer both practical and theoretical questions in the fields of Genome Evolution and Bioinformatics.
 The areas where we think this software could be most useful are: modelling Genome Evolution and Genome Size Evolution, benchmarking software and algorithms for Genome Evolution, genetic distance and Phylogenesis, for benchmarking and validating software and algorithms for *de novo* assembly, mapping, and structural variant calling.
 
-These are some applications that were tested so far in this project and the usage of these is described in the following section.
+These are some applications that were tested so far in this project and their usage is described in the following section.
 - Synthetic genome evolution through SCRaMbLE
 - Genome evolution of any genome through genomic rearrangements
 - Simulation of long sequencing reads
@@ -40,7 +40,7 @@ These are some applications that were tested so far in this project and the usag
 
 
 ## <a name="usage"></a>Usage
-Following are some applications of SCRaMbLE-SIM with some example of how to use them.
+Following are some applications of SCRaMbLE-SIM with some examples of how to use them.
 
 ### <a name="genome_evolution"></a>Genome evolution through SCRaMbLE
 All the essential functions to SCRaMbLE a chromosome are in the scripts SCRaMbLE_simulation_3.py or SCRaMbLE_simulation_3_circular.py. You can SCRaMbLE a chromosome within python by calling the function **force_SCRaMLE_lin_cir** or **SCRaMbLE_muliple_chrs** if you have multiple chromosomes.
@@ -58,7 +58,7 @@ SCRaMbLE-SIM allows the simulation of SCRaMbLE with essential LUs and the centro
 force_SCRaMLE_lin_cir_events(syn_chr: list, Number_events: int, essential=[], circular=False, mu=0, sigma=7, CEN=[], force=True, probability=[0, 2, 2, 1], event_type=False)
 ```
 
-I am also working to the script SCRaMbLE_DNA_chromosomes.py which will take as input a genome in fasta file and output a SCRaMbLEd genome in a fasta file. However, this script is not finished yet.
+I am also working on the script SCRaMbLE_DNA_chromosomes.py which will take as input a genome in fasta file and output a SCRaMbLEd genome in a fasta file. However, this script is not finished yet.
 
 
 ### <a name="reads_SIM"></a>Simulation of long sequencing reads
@@ -73,10 +73,10 @@ All the essential functions for simulating long sequencing reads are in the scri
 DNA_extraction_coverage(syn_chr, coverage: int, reads_len=8, sigma=3, circular=False)
 ```
 
-I am also working to the script simulate_reads.py which will take as input a genome in fasta file and output simulated long reads in a fasta file. However, this script is not finished yet.
+I am also working on the script simulate_reads.py which will take as input a genome in fasta file and output simulated long reads in a fasta file. However, this script is not finished yet.
 
 ### <a name="CN"></a>Genome composition and segment copy number analysis
-Using simulated chromosomes, it is possible to investigate the fate of LUs during SCRaMbLE evolution. This means to study which segments are easier to be lost or to be conserved
+Using simulated chromosomes, it is possible to investigate the fate of LUs during SCRaMbLE evolution. This means studying which segments are easier to be lost or to be conserved
 The segment copy number after many SCRaMbLE simulations can be plotted with the function **SCRaMbLE_SIM_LU_CN** in the Mapping_coverage_MM.py script.
 
 ```py
@@ -90,7 +90,7 @@ Additionally, studying the differences between simulated and biological data mig
 The SCRaMbLE population simulator can be used to study the SCRaMbLEd population structure.
 
 So far, we have modelled and simulated evolution through a single genome/chromosome that keeps accumulating SCRaMbLE events.
-However, a different approach consists of modelling and simulating the dynamics of an entire SCRaMbLE population where each cell has a different number of SEs and cells share common ancestors and, therefore, some SEs.
+However, a different approach consists of modelling and simulating the dynamics of an entire SCRaMbLE population where each cell has a different number of SCRaMbLE events (SEs) and cells share common ancestors and, therefore, some SEs.
 
 Here we simulated a SCRaMbLE experiment where the Cre recombinase gene is placed under a daughter-specific promoter, and it is expressed only in the daughter cell but not in the mother cell (Lindstrom & Gottschling, 2009).
 Therefore, at each generation, the cells replicate, and only the daughter cells undergo an x number of SCRaMbLE events.
@@ -102,24 +102,38 @@ SCRaMbLE_population2(syn_chr, initial_cells=1, number_replication=8, events_for_
 ### <a name="mortality"></a>Mortality rate analysis of SCRaMbLE in a population
 As the synthetic genome of a cell is SCRaMbLEd, there is a probability that an essential gene gets deleted and the cell dies, and we call this probability mortality rate. Indeed, this probability depends on the number of essential LUs, their position in the genome, the Cre activity, and the relative probability of deletions compared to other rearrangements.
 
-To calculate the SCRaMbLE event mortality rate in chromosomes, you can used the function **percentage_of_chrs_with_essential_LUs_deleted**, which simulates 1000 times one SCRaMbLE event in the chromosome. Then it calculates the percentage of chromosomes with at least one essential LU deleted.
+To calculate the SCRaMbLE event mortality rate in chromosomes, you can use the function **percentage_of_chrs_with_essential_LUs_deleted**, which simulates 1000 times one SCRaMbLE event in the chromosome. Then it calculates the percentage of chromosomes with at least one essential LU deleted.
 
 ```py
 percentage_of_chrs_with_essential_LUs_deleted(Chr, simulations=1000, Number_events=1, essential=[], mu=0, sigma=10, CEN=[], probability=[3, 2, 2, 1]):
 ```
 
-Use the function **simulate_SCRaMbLE_pop_check_survival_rate** to simulate a SCRaMbLE population and calculate at every generation what is the mortality rate and how many cells are alive and death.
+Use the function **simulate_SCRaMbLE_pop_check_survival_rate** to simulate a SCRaMbLE population and calculate at every generation what is the mortality rate and how many cells are alive and dead.
 
 ```py
 simulate_SCRaMbLE_pop_check_survival_rate(syn_chr, initial_cells=1, number_replication=8, events_for_replication=1, essential=[], mu=0, sigma=10, CEN=[], probability=[3, 2, 2, 1])
 ```
 
 ### <a name="chr_size"></a>Chromosome size evolution analysis
+SCRaMbLE-SIM can be used to simulate many SCRaMbLEd chromosomes and perform some statistics about chromosome length evolution.
 
-SCRaMbLE_simulation_chr_len_events_easy.py
+In the script SCRaMbLE_simulation_chr_len_events_easy.py there are all the functions created to perform this analysis. With the function **plot_SCRaMbLE_chr_len** we averaged the chromosome length during a 1,000 SCRaMbLE events evolution.
 
 ```py
 plot_SCRaMbLE_chr_len(syn_chr, events=15, simulations=100, essential=[], CEN=[], circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], file_name="", SD=False)
+```
+
+However, we also study how the chromosome length during a SCRaMbLE evolution is influenced by several parameters like initial chromosome length, number of essential LUs, and relative probability of deletions and duplications.
+
+```py
+# This function plots the chromosome length over a SCRaMbLE evolution using different initial chromosome length.
+chr_len_range_SCRaMbLE(events=15, simulations=100, essential=[], CEN=[], circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], file_name="")
+
+# This function plots the chromosome length over a SCRaMbLE evolution using different number of essential LUs.
+chr_len_essential_range_SCRaMbLE(syn_chr=50, events=15, simulations=100, CEN=[], circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], file_name="")
+
+# This function plots the chromosome length over a SCRaMbLE evolution using different probabilities of deletions and duplications.
+chr_len_probabilities_range_SCRaMbLE(syn_chr=50, events=15, simulations=100, essential=[], CEN=[], circular=False, mu=0, sigma=10, force=True, probability=[0, 2, 2, 1], file_name="", LOG=True)
 ```
 
 ## <a name="help"></a>Getting help
@@ -131,6 +145,8 @@ If you use this software, please consider citing our manuscript.
 ## <a name="limitations"></a>Limitations
 SCRaMbLE-SIM was mostly tested on synthetic yeast genomes. For all other WT genomes which do not contain loxPsym sites, the recombination junctions can be chosen at random, or by the user to have equal size segments or chosen arbitrarily.
 
-SCRaMbLE-SIM allows only genome evolution through genomic rearrangements and do not allows SNPs and mutations.
+SCRaMbLE-SIM allows only genome evolution through genomic rearrangements and does not allows SNPs and INDELs.
 
 At the moment, simulated reads have no errors inside and therefore might be different for this aspect to nanopore sequencing reads. Moreover, all simulated reads start and end at one recombination junction.
+
+For the read length distribution, we chosen a "Discretized Truncated Normal Distribution" (DTND). However, this is just one of the three most common distributions for nanopore read length (Yu Li et al., 2018).
