@@ -45,7 +45,7 @@ def cut_reference_in_LUs(filename="IXR_BACnewseq.fa", ID="", starting_LU=1):
                 start_LU = pos_loxP[i] + 17
                 starting_LU = starting_LU + 1
                 print(LU_ID, LU_len)
-                print(LU)
+                #print(LU)
             # add last LU. This will be from the position of the last loxP site until the end of the chromosome
             end_LU = len(record.seq)
             last_LU = record.seq[start_LU:]
@@ -59,32 +59,36 @@ def cut_reference_in_LUs(filename="IXR_BACnewseq.fa", ID="", starting_LU=1):
             LU_list[num_chrs-1].append(starting_LU)
             Chr_list.append(record.id)
             print(LU_ID, LU_len)
-            print(last_LU)
+            #print(last_LU)
             #print(LU_start_list, LU_end_list, LU_size_list)
 
-            # Save all the LUs into a single fasta file
-            records = []
-            for i in range(len(LU_ID_list)):        # Check i+1!!!
-                Description = "Chromosome=" + str(record.id) + ", LU=" + str(LU_list[num_chrs-1][i]) + ", start=" + str(LU_start_list[i]) + ", end=" + str(LU_end_list[i]) + ", size=" + str(LU_size_list[i])
-                records.append(SeqRecord(LU_DNA_list[i], LU_ID_list[i], description=Description))
-            SeqIO.write(records, ID + ".loxpreg.fa", "fasta")
+        # Save all the LUs into a single fasta file
+        records = []
+        LU_list_one_list = []
+        for Chr in LU_list:
+            LU_list_one_list = LU_list_one_list + Chr
+        for i in range(len(LU_ID_list)):        # Check i+1!!!
+            Description = "Chromosome=" + str(record.id) + ", LU=" + str(LU_list_one_list[i]) + ", start=" + str(LU_start_list[i]) + ", end=" + str(LU_end_list[i]) + ", size=" + str(LU_size_list[i])
+            records.append(SeqRecord(LU_DNA_list[i], LU_ID_list[i], description=Description))
+        SeqIO.write(records, ID + ".loxpreg.fa", "fasta")
 
-            # Save the info about each LU
-            df_LU_position = pd.DataFrame()
-            # Add the data in different columns
-            df_LU_position["Chromosome"] = Chr_list
-            df_LU_position["LU"] = LU_list[num_chrs-1]  # Check this
-            df_LU_position["LU start"] = LU_start_list
-            df_LU_position["LU end"] = LU_end_list
-            df_LU_position["LU size"] = LU_size_list
-            df_LU_position["LU DNA"] = LU_DNA_list
-            # Save the DataFrame in an excel file
-            df_LU_position.to_csv(ID + "_LU_info.csv")
+        # Save the info about each LU
+        df_LU_position = pd.DataFrame()
+        # Add the data in different columns
+        df_LU_position["Chromosome"] = Chr_list
+        df_LU_position["LU"] = LU_list_one_list
+        df_LU_position["LU start"] = LU_start_list
+        df_LU_position["LU end"] = LU_end_list
+        df_LU_position["LU size"] = LU_size_list
+        df_LU_position["LU DNA"] = LU_DNA_list
+        # Save the DataFrame in an excel file
+        df_LU_position.to_csv(ID + "_LU_info.csv")
     return LU_list
 
 if __name__ == '__main__':
     #cut_reference_in_LUs(filename=str(sys.argv[1]))
     #extracted_LUs_seq = cut_reference_in_LUs(filename="IXR_BACnewseq.fa")
+    #extracted_LUs_seq = cut_reference_in_LUs(filename="synII_III.fasta")
     #print(extracted_LUs_seq)
     # IXR_BACnewseq_test.fa has two synIXR chromosomes
     #cut_reference_in_LUs(filename="IXR_BACnewseq_test.fa")
