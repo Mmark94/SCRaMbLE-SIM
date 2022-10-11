@@ -7,6 +7,7 @@ from Bio.SeqRecord import SeqRecord
 import sys
 import argparse
 import pandas as pd
+import random
 
 # path_str is from comparison_sol.py
 def path_str(x: list):
@@ -29,6 +30,18 @@ def extract_LU_len(LU_fasta="IXR_BACnewseq.loxpreg.fa", SEQ=False):
                 # Only save the LU length
                 LU_ID_len_seq[LU_ID] = len(LU_seq)
     return LU_ID_len_seq
+
+def introduce_mismatches(DNA_seq, percentage_mismatches=0.05):
+    DNA_seq_mismatches = DNA_seq[:]
+    bases = ["A", "C", "G", "T"]
+    num_mismatches = round(len(DNA_seq)*percentage_mismatches)
+    for _ in range(num_mismatches):
+        # Find a random position
+        pos_mis = random.randrange(1, len(DNA_seq))
+        # Replace the base in that position with a random bases
+        new_base = random.choice(bases)
+        DNA_seq_mismatches = DNA_seq_mismatches[:pos_mis] + new_base + DNA_seq_mismatches[pos_mis+1:]
+    return DNA_seq_mismatches
 
 # If the input is a list of paths, it will save each path in a different fasta file
 def path_to_DNA_separate(path=[1,2,3], LU_fasta="IXR_BACnewseq.loxpreg.fa", filename="A_test"):
@@ -70,7 +83,7 @@ def path_to_DNA_separate(path=[1,2,3], LU_fasta="IXR_BACnewseq.loxpreg.fa", file
 
 # Use this function to convert paths or subpaths into DNA sequences in fasta files.
 # If the input is a list of paths, it will save each path in same fasta file in different lines
-def path_to_DNA(path=[1,2,3], LU_fasta="IXR_BACnewseq.loxpreg.fa", filename="A_test", ID="path"):
+def path_to_DNA(path=[1,2,3], LU_fasta="IXR_BACnewseq.loxpreg.fa", filename="A_test", ID="path", mismatches=False, percentage_mismatches=0.05, random_cut_ends=False):
     if isinstance(path, str):
         # For example:  "1,2,-3" => [1, 2, -3]
         path = str_path(path)
@@ -93,6 +106,18 @@ def path_to_DNA(path=[1,2,3], LU_fasta="IXR_BACnewseq.loxpreg.fa", filename="A_t
                 else:
                     # The LU is negative. Therefore it is in the reverse orientation.
                     path_DNA_temp = path_DNA_temp + LU_ID_seq[abs(LU)].reverse_complement()
+            if mismatches:
+                path_DNA_temp = introduce_mismatches(path_DNA_temp, percentage_mismatches=percentage_mismatches)
+            if random_cut_ends:
+                # Cut first end. Find the position where to cut
+                pos_cut1 = random.randrange(1, len(LU_ID_seq[abs(path[i][0])]))
+                # Cut second end
+                pos_cut2 = random.randrange(1, len(LU_ID_seq[abs(path[i][-1])]))
+                pos_cut2 = len(path_DNA_temp) - pos_cut2
+                # Make the cuts
+                #print(pos_cut1, pos_cut2)
+                path_DNA_temp = path_DNA_temp[pos_cut1:pos_cut2]
+            # Add the DNA sequence to the list of sequences
             path_DNA.append(path_DNA_temp)
     else:
         # Convert the path into a DNA sequence
@@ -108,7 +133,17 @@ def path_to_DNA(path=[1,2,3], LU_fasta="IXR_BACnewseq.loxpreg.fa", filename="A_t
             else:
                 # The LU is negative. Therefore it is in the reverse orientation.
                 path_DNA = path_DNA + LU_ID_seq[abs(LU)].reverse_complement()
-
+        if mismatches:
+            path_DNA = introduce_mismatches(path_DNA, percentage_mismatches=percentage_mismatches)
+        if random_cut_ends:
+            # Cut first end. Find the position where to cut
+            pos_cut1 = random.randrange(1, len(LU_ID_seq[abs(path[0])]))
+            # Cut second end
+            pos_cut2 = random.randrange(1, len(LU_ID_seq[abs(path[-1])]))
+            pos_cut2 = len(path_DNA) - pos_cut2
+            # Make the cuts
+            #print(pos_cut1, pos_cut2)
+            path_DNA = path_DNA[pos_cut1:pos_cut2]
     # Save the path DNA into a fasta file
     if isinstance(path[0], int):  # There is only one sequence in "subpaths"
         path = [path]
@@ -128,7 +163,8 @@ if __name__ == '__main__':
     path = [1, 2, 3, -4]
     path = [[3, -4], [4,-5,-6], [7,-8,-9]]
     #print(extract_LU_len(LU_fasta=LU_fasta))
-    #path_to_DNA(path=path, LU_fasta=LU_fasta, filename=filename, ID="path")
+    #print(introduce_mismatches("ACACACACACACACAC", percentage_mismatches=0.05))
+    #path_to_DNA(path=path, LU_fasta=LU_fasta, filename=filename, ID="path", mismatches=True, percentage_mismatches=0.05, random_cut_ends=True)
 
 
     parser = argparse.ArgumentParser(description="Convert the path or subpath into DNA sequences.")

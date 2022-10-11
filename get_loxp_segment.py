@@ -96,8 +96,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="Divide the reference synthetic chromosome fasta file in a single fasta file containing the LU sequences.")
 
-    parser.add_argument("-ref", "--reference", type=str, metavar="", required=True, help="The reference fasta file containing a synthetic chromosome")
-    parser.add_argument("-ID", "--filename", type=str, metavar="", required=False, default="", help="The name of the output file")
+    parser.add_argument("-ref", "--reference", type=str, required=True, help="The reference fasta file containing a synthetic chromosome")
+    parser.add_argument("-ID", "--filename", type=str, required=False, default="", help="The name of the output file")
 
     args = parser.parse_args()
 
