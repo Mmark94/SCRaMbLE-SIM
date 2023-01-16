@@ -6,6 +6,9 @@ import sys
 import argparse
 import pandas as pd
 
+# This script divides a reference genome (fasta) into a single fasta file containing the LoxPsym Units (LUs) sequences.
+# Basically it cuts the reference genome where it finds a loxPsym site. Therefore, at each LU is assigned an identifier integer.
+
 def cut_reference_in_LUs(filename="IXR_BACnewseq.fa", ID="", starting_LU=1):
     if ID == "":
         # Take the name before the dot. find() finds the first occurrence. rfind() finds the last occurrence.

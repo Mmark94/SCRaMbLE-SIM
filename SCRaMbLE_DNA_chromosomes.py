@@ -50,8 +50,9 @@ if __name__ == '__main__':
     parser.add_argument("-num_SE", "--Number_SCRaMbLE_events", type=int, required=True, default=15, help="How many SCRaMbLE events do you want to simulate?")
     parser.add_argument("-segment_size", "--segment_size", type=int, required=False, default=1000, help="The size of each segment. Default=1000")
     parser.add_argument("-min_segment_size", "--min_segment_size", type=int, required=False, default=100, help="The minimal size of a segment. Default=100")
+    parser.add_argument("-circular", "--circular", type=bool, required=False, default=False, help="Use this flag if the chromosome is circular. Not having this flag will evaluate to False")
 
     args = parser.parse_args()
     # Note: --synthetic False will evaluate to True! removing --synthetic will evaluate to False
 
-    SCRaMbLE_DNA(filename=args.filename, ID=args.ID, synthetic=args.synthetic, Number_SCRaMbLE_events=args.Number_SCRaMbLE_events , starting_LU=1, segment_size=args.segment_size, min_segment_size=args.min_segment_size)
+    SCRaMbLE_DNA(filename=args.filename, ID=args.ID, synthetic=args.synthetic, Number_SCRaMbLE_events=args.Number_SCRaMbLE_events , starting_LU=1, segment_size=args.segment_size, min_segment_size=args.min_segment_size, circular=args.circular)

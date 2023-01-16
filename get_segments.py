@@ -7,7 +7,9 @@ import argparse
 import pandas as pd
 import random
 
-# Cuts the reference genome in segments of the same size. If you have some mapping_breakpoints the program will be force to cut here as well.
+# This function cuts the reference genome in segments of the same size.
+# It is also possible to provide the function with a list of sites where it will be forced to cut. This option is particularly useful for cutting in mapping breakpoints.
+# Indeed, cutting in mapping breakpoints will ensure that a structural variant is not within a segment and that it could be correctly assembled.
 def cut_reference_in_segments(filename="IXR_BACnewseq.fa", ID="", starting_LU=1, segment_size=1000, min_segment_size=100, mapping_breakpoints={}, RANDOM=False, random_cuts=100):
     if ID == "":
         # Take the name before the dot. find() finds the first occurrence. rfind() finds the last occurrence.

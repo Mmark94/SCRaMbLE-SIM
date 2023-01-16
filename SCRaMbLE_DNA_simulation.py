@@ -5,15 +5,14 @@ from SCRaMbLE_simulation_3_circular import smallest_SV
 import numpy as np
 import matplotlib.pyplot as plt
 
-#segments = 100  #number of loxP segments
+# This script contains functions to simulate the process of generating nanopore sequencing reads.
+# SCRaMbLE-SIM can also be applied to simulate long sequencing reads such as those from Nanopore or PacBio by cutting input chromosomes.
+# To simulate a sequencing read or subpath, SCRaMbLE-SIM cuts the original chromosome at two positions. The first position is chosen randomly in the chromosome (uniform distribution), and the second position is chosen by the read length L, as the distance from the first cut in LUs. The read length L is determined by a "Discretized Truncated Normal Distribution" (DTND).
 
-#SCRaMbLEd_chr = list(range(1, segments+1, 1))
+# Note: 1 LoxPsym Unit (LU) = 2.9 Kb
 
-#SCRaMbLEd_chr = [1, 2, 3, 4, 5, 6, -8, -7, 9, 10, 11, 12, -8, -7, 9, 10, 11, 12, 13, 14, 15, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 43, 44, 2, 3, 4, 5, 6, -8, -7, 9, 10, 11, 12, 13, 14, 15, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44]
-
-# 1 LoxP unit = 2.88 Kb
-
-
+# This function simulates long nanopore reads. The input option "coverage" establishes how many reads the function will simulate.
+# In this obsolete function the positions where to cut are completely random and, therefore, the read length does not have an uniform distribution.
 def DNA_extraction_any_L(syn_chr, coverage):
     DNA_fragments = []
     T=0
@@ -32,7 +31,9 @@ def DNA_extraction_any_L(syn_chr, coverage):
 
 #print(DNA_extraction_any_L(SCRaMbLEd_chr , 20))
 
-# I should create a function for DNA extraction of circular chromosomes
+# This function simulates long nanopore reads. The input option "reads" establishes how many reads the function will simulate.
+# This function generates reads with a "Discretized Truncated Normal Distribution" (DTND).
+# Note: The function will reverse (invert) a percentage Prev of the reads.
 def DNA_extraction(syn_chr, reads, mu=8, sigma=3, circular=False, Prev=0.3):
     DNA_fragments = []
     if len(syn_chr) < 4:
@@ -91,18 +92,19 @@ def DNA_extraction(syn_chr, reads, mu=8, sigma=3, circular=False, Prev=0.3):
 #reads = DNA_extraction(A, 8, mu=8, sigma=3, circular=True)
 #print(reads)
 
-def DNA_extraction_coverage(syn_chr, coverage: int, reads_len=8, sigma=3, circular=False):
+# This function differs from the previous DNA_extraction function because the user can chose the coverage and not how many reads.
+def DNA_extraction_coverage(syn_chr, coverage: int, reads_len=8, sigma=3, circular=False, Prev=0.3):
     # The coverage input should be an integer.
-    coverage = int(coverage)
+    coverage = int(round(coverage))
     if syn_chr == []:
         return syn_chr
     if isinstance(syn_chr[0], int):  # One chromosome
-        #The function firstly find out how many reads are necessary to have one fold coverage using the formula: NL/G=coverage   (N=number of reads, L=read length, G=genome size)
+        # The function firstly find out how many reads are necessary to have one fold coverage using the formula: NL/G=coverage   (N=number of reads, L=read length, G=genome size)
         if len(syn_chr) <= reads_len:
             reads_num = coverage
         else:
             reads_num = int(len(syn_chr) / reads_len)
-        DNA_fragments = DNA_extraction(syn_chr=syn_chr, reads=reads_num * coverage, mu=reads_len, sigma=sigma, circular=circular)
+        DNA_fragments = DNA_extraction(syn_chr=syn_chr, reads=reads_num * coverage, mu=reads_len, sigma=sigma, circular=circular, Prev=Prev)
     else:  # there are multiple chromosomes
         DNA_fragments = []
         for Chr in syn_chr:
@@ -111,11 +113,11 @@ def DNA_extraction_coverage(syn_chr, coverage: int, reads_len=8, sigma=3, circul
                 reads_num = coverage
             else:
                 reads_num = int(len(Chr) / reads_len)
-            DNA_fragments = DNA_fragments + (DNA_extraction(syn_chr=Chr, reads=reads_num * coverage, mu=reads_len, sigma=sigma, circular=circular))
+            DNA_fragments = DNA_fragments + (DNA_extraction(syn_chr=Chr, reads=reads_num * coverage, mu=reads_len, sigma=sigma, circular=circular, Prev=Prev))
             #print("DNA_fragments =", DNA_fragments)
     return DNA_fragments
 
-
+# This function calculate the LU copy number of one or many paths.
 def coverage(paths):
     Dic = {}
     if isinstance(paths[0], int):
@@ -167,11 +169,10 @@ def coverage2(paths, solution):
         return Dic
 
 #solution=[1,2,3,4,5,6]
-
 #print(coverage2(L2,solution))
-
 #myDictionary = coverage2(L2,solution)
-# look also in Mapping_coverage_MM.py
+
+# This function was taken and modified from Mapping_coverage_MM.py
 def plot_Dic(myDictionary):
     pos = np.arange(len(myDictionary.keys()))
     width = 1.0     # gives histogram aspect to the bar diagram
@@ -209,14 +210,14 @@ def plot_Dic2(myDictionary):
     plt.close()
     return None
 
-# This function is from Mapping_coverage_MM.py
+# This function was taken and modified from Mapping_coverage_MM.py
 def divide_dictionary(Dic1, divisor):
     Dic_values = [x / divisor for x in Dic1.values()]
     Dic_keys = list(Dic1.keys())
     Dic_divided = {Dic_keys[i]: Dic_values[i] for i in range(len(Dic_keys))}
     return Dic_divided
 
-# Function from Mapping_coverage_MM
+# This function was taken and modified from Mapping_coverage_MM.py
 # Count the number of LUs in a list of reads.
 def number_LU(reads):
     sum_LU = 0

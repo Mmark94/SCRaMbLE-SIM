@@ -1,5 +1,5 @@
 from comparison_sol import str_path
-from comparison_sol import path_str
+#from comparison_sol import path_str
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio import SeqUtils
@@ -9,12 +9,16 @@ import argparse
 import pandas as pd
 import random
 
-# path_str is from comparison_sol.py
+# This script is used to convert subpaths and path solutions into DNA sequences. It relies on Biopython.
+
+# This function is from comparison_sol.py.
+# It converts paths into strings.
 def path_str(x: list):
     to_list = [str(i) for i in x]
     to_string = ",".join(to_list)
     return to_string
 
+# This function extracts either the DNA length of each LU or the DNA sequence if SEQ=True. The input is a fasta file which contains LU DNA sequences.
 def extract_LU_len(LU_fasta="IXR_BACnewseq.loxpreg.fa", SEQ=False):
     LU_ID_len_seq = {}
     # Open the reference fasta file
@@ -43,7 +47,8 @@ def introduce_mismatches(DNA_seq, percentage_mismatches=0.05):
         DNA_seq_mismatches = DNA_seq_mismatches[:pos_mis] + new_base + DNA_seq_mismatches[pos_mis+1:]
     return DNA_seq_mismatches
 
-# If the input is a list of paths, it will save each path in a different fasta file
+# This function takes as input a subpath or path and outputs a DNA sequence. It also save this DNA sequence in a new fasta file.
+# If the input is a list of paths, it will save each path in a different fasta file.
 def path_to_DNA_separate(path=[1,2,3], LU_fasta="IXR_BACnewseq.loxpreg.fa", filename="A_test"):
     if isinstance(path, str):
         # For example:  "1,2,-3" => [1, 2, -3]
@@ -52,7 +57,7 @@ def path_to_DNA_separate(path=[1,2,3], LU_fasta="IXR_BACnewseq.loxpreg.fa", file
     LU_ID_seq = extract_LU_len(LU_fasta=LU_fasta, SEQ=True)
     if isinstance(path[0], list):   # the input is a list of subpaths
         for i in range(len(path)):
-            path_to_DNA(path=path[i], LU_fasta="IXR_BACnewseq.loxpreg.fa", filename=filename + "_" + str(i))
+            path_to_DNA_separate(path=path[i], LU_fasta="IXR_BACnewseq.loxpreg.fa", filename=filename + "_" + str(i))
         return None
     else:
         # Convert the path into a DNA sequence
@@ -158,6 +163,7 @@ def path_to_DNA(path=[1,2,3], LU_fasta="IXR_BACnewseq.loxpreg.fa", filename="A_t
     return None
 
 if __name__ == '__main__':
+    # Test the code
     LU_fasta = "IXR_BACnewseq.loxpreg.fa"
     filename = "A_test"
     path = [1, 2, 3, -4]

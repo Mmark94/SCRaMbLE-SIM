@@ -1,7 +1,5 @@
 # SCRaMbLE-SIM: Genome SCRaMbLE evolution simulator
-<!--
 [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/wouter_decoster.svg?style=social&label=Follow%20%40Mm94Marco)](https://twitter.com/Mm94Marco)
--->
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -73,7 +71,9 @@ All the essential functions for simulating long sequencing reads are in the scri
 DNA_extraction_coverage(syn_chr, coverage: int, reads_len=8, sigma=3, circular=False)
 ```
 
-I have also created the script simulate_reads.py which takes as input a genome in fasta file and output simulated long reads in a fasta file. . You can test this with the script test/simulate_reads_work.sh . This works on one or multiple synthetic or WT chromosomes.
+I have also created the script simulate_reads.py which takes as input a genome in fasta file and output simulated long reads in a fasta file. You can test this with the script test/simulate_reads_work.sh . This works on one or multiple synthetic or WT chromosomes.
+
+By default, the script subpath_to_DNA1.py do not simulate SNPs and INDELs. Moreover, all simulated reads start and end at one recombination junction. However, it is possible to introduce mismatches and variation in the length of the simulated reads using the flags mismatches=True, and random_cut_ends=True 
 
 ### <a name="CN"></a>Genome composition and segment copy number analysis
 Using simulated chromosomes, it is possible to investigate the fate of LUs during SCRaMbLE evolution. This means studying which segments are easier to be lost or to be conserved
@@ -144,9 +144,5 @@ If you use this software, please consider citing our manuscript.
 
 ## <a name="limitations"></a>Limitations
 SCRaMbLE-SIM was mostly tested on synthetic yeast genomes. For all other WT genomes which do not contain loxPsym sites, the recombination junctions can be chosen at random, or by the user to have equal size segments or chosen arbitrarily.
-
-SCRaMbLE-SIM allows only genome evolution through genomic rearrangements and does not allows SNPs and INDELs.
-
-At the moment, simulated reads have no errors inside and therefore might be different for this aspect to nanopore sequencing reads. Moreover, all simulated reads start and end at one recombination junction.
 
 For the read length distribution, we chosen a "Discretized Truncated Normal Distribution" (DTND). However, this is just one of the three most common distributions for nanopore read length (Yu Li et al., 2018).

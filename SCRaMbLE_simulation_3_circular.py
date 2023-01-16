@@ -2,7 +2,11 @@
 import random
 from comparison_sol import LoxP_unit_count_list
 
-# This function find what is the smaller SV in a circular chromosome
+# This script contains functions to simulate the process of generating chromosome rearrangements in circular chromosomes.
+
+
+# This function find what is the smaller SV in a circular chromosome.
+# For example, [1,2,3,4,5] can be cut in two pieces: [2,3,4] and [1,5].
 def smallest_SV(pos1, pos2, syn_chr):
     LEN = len(syn_chr)
     # I want that the position 1 is always smaller than position 2
@@ -22,7 +26,8 @@ def smallest_SV(pos1, pos2, syn_chr):
 #print(smallest_SV(5, 35, syn_chr))
 #print("---------")
 
-# If some essential LUs are not in the chromosome before SCRaMbLE, it could give problems.
+# This is similar to the deletion function. However, if an essential LU is deleted and has CN=0 it will nullify the deletion.
+# Note: If some essential LUs are not in the chromosome before SCRaMbLE, it could give problems.
 def deletion_essential_circular(pos1, pos2, syn_chr, essential=[]):
     if pos1 > pos2:
         temp=pos1
@@ -104,8 +109,8 @@ def SCRaMbLE4_circular(syn_chr, Number_events, essential=[], mu=0, sigma=10, CEN
     events = random.choices(["NULL", "DEL", "INV", "DUP"], probability, k=Number_events)
     for event in events:
         pos1 = random.randrange(1, len(new_chr))
-        # pick a random number to decide the length of the fragment. It is a Gaussian distribution, mu is the mean and sigma is the standard deviation.
-        # Discretized truncated normal distribution (DTND)
+        # Pick a random number to decide the length of the fragment. It is a Gaussian distribution, mu is the mean and sigma is the standard deviation.
+        # Discretized truncated normal distribution (DTND).
         #R = int(random.gauss(mu, sigma))
         #if R < 1:
         #    R = 1
@@ -115,7 +120,7 @@ def SCRaMbLE4_circular(syn_chr, Number_events, essential=[], mu=0, sigma=10, CEN
             # this loop makes repeat the choosing if R == 0
             R = abs(int(random.gauss(mu, sigma)))
 
-        # the second cut position pos2 could be before or after the first position pos1
+        # The second cut position pos2 could be before or after the first position pos1.
         if random.random() >= 0.5:
             pos2 = pos1 + R
         else:
@@ -129,7 +134,7 @@ def SCRaMbLE4_circular(syn_chr, Number_events, essential=[], mu=0, sigma=10, CEN
             pos2 = len(new_chr) + pos2
         if pos1 == pos2:            # Nothing happens
             continue
-        # I want that the position 1 is always smaller than position 2
+        # I want that the position 1 is always smaller than position 2.
         if pos1 > pos2:
             temp = pos1
             pos1 = pos2

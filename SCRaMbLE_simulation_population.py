@@ -6,13 +6,18 @@ import matplotlib.pyplot as plt
 from SCRaMbLE_simulation_3 import SCRaMbLE4
 from SCRaMbLE_simulation_3_circular import SCRaMbLE4_circular
 
+# This script can be used to simulate SCRaMbLE in a yeast population.
+# So far, we have modelled and simulated evolution through a single genome/chromosome that keeps accumulating SCRaMbLE events.
+# However, a different approach consists of modelling and simulating the dynamics of an entire SCRaMbLE population where each cell has a different number of SEs and cells share common ancestors and, therefore, some SEs.
+# As a proof of concept, we modelled and simulated one of the most common SCRaMbLE protocols where the Cre recombinase gene is placed under a daughter-specific promoter, and it is expressed only in the daughter cell but not in the mother cell (Lindstrom & Gottschling, 2009).
+# Therefore, at each generation, the cells replicate, and only the daughter cells undergo an x number of SCRaMbLE events (for our simulations, we assumed M = 1 SE for replication).
 
 # This add one to all the elements of the list (cells)
 def list_plus_one(cells: list):
     new_cells = [x+1 for x in cells]
     return new_cells
 
-# This calculate the frequency of each cell in the population
+# This calculate the frequency of each cell in the population.
 def dict_percentage(cells: list):
     D_count = {}
     D_percentage = {}

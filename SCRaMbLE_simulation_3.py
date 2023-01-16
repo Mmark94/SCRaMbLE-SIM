@@ -5,6 +5,15 @@ from SCRaMbLE_simulation_3_circular import SCRaMbLE4_circular
 #from Mapping_coverage_MM import plot_LU_CN
 #from Mapping_coverage_MM import plot_LU_CN_percentage
 
+# This script contains functions to simulate the process of generating chromosome rearrangements in linear chromosomes.
+# SCRaMbLE-SIM takes as input a chromosome path (list of segments) or a DNA sequence and the number of SCRaMbLE events to simulate and outputs a SCRaMbLEd chromosome.
+# It can simulate all possible events like deletions, inversions, tandem duplications, inverted duplications, and translocations if multiple chromosomes are present.
+# SCRaMbLE-SIM can simulate SCRaMbLE in one or many linear or circular chromosomes.
+# SCRaMbLE-SIM also allows the user to determine the length distribution of the SCRaMbLE events.
+# Based on evidence from our previous works, the probability of a SCRaMbLE event decreases with the distance between loxPsym sites;
+# therefore, smaller events are more likely than larger ones. To simulate this event distribution, we have chosen the event length randomly using a "Discretized Half-normal distribution".
+
+
 # This function was copied from comparison_sol.py
 def LoxP_unit_count_list(Path, list_unit):
     LP_unit_count = 0
@@ -22,6 +31,8 @@ def invert(x):
             inv_x.insert(0,element)
     return inv_x
 
+# The following functions simulate chromosome rearrangements like deletions, inversions, duplications, and translocations.
+
 def deletion(pos1, pos2, syn_chr):
     if pos1 > pos2:
         temp=pos1
@@ -29,24 +40,7 @@ def deletion(pos1, pos2, syn_chr):
         pos2=temp
     return syn_chr[:pos1] + syn_chr[pos2:]
 
-def deletion_essential0(pos1, pos2, syn_chr, essential=[]):
-    if pos1 > pos2:
-        temp=pos1
-        pos1=pos2
-        pos2=temp
-    # It check if all the essential fragments are in the synthetic chromosome before the deletion happen. If there are not, it simply continue with the deletion.
-    syn_chr_abs = [abs(ele) for ele in syn_chr]
-    T1 = all(elem in syn_chr_abs for elem in essential)
-    # It create the new chromosome with the deletion
-    new_chr = syn_chr[:pos1] + syn_chr[pos2:]
-    # It check if all the essential fragments are in the synthetic chromosome after the deletion happen. If there are not, it will output the original chr.
-    new_chr_abs = [abs(ele) for ele in new_chr]
-    T2 = all(elem in new_chr_abs for elem in essential)
-    if T2 is False and T1 is True and essential != []:
-        return syn_chr
-    else:
-        return new_chr
-
+# This is similar to the deletion function. However, if an essential LU is deleted and has CN=0 it will nullify the deletion.
 def deletion_essential(pos1, pos2, syn_chr, essential=[]):
     if pos1 > pos2:
         temp=pos1
@@ -71,7 +65,6 @@ def deletion_essential(pos1, pos2, syn_chr, essential=[]):
         return new_chr
 
 # Synthetic lethal interactions. These are genes that are redundant, they are non-essentials but if another genes is missing, they could become essentials.
-
 def syn_lethal_interactions(syn_chr, pairs=[[]]):
     for P in pairs:
         # If at least one of the LUs in the pair P is present in the chromosome syn_chr, so the cell is viable
@@ -136,6 +129,7 @@ def translocation(chr1, chr2):
 #B = [12,13,14,15,16,17,18,19,20]
 #print(translocation(A , B))
 
+# The SCRaMbLE functions simulate the process of chromosome rearrangements through SCRaMbLE events.
 def SCRaMbLE(syn_chr):
     pos1 = random.randrange(1, len(syn_chr))
     pos2 = random.randrange(1, len(syn_chr))
@@ -199,7 +193,7 @@ def SCRaMbLE3(syn_chr, Number_events, mu=7, sigma=7):
     events = random.choices(["NULL", "DEL", "INV", "DUP"], [3, 2, 2, 1], k=Number_events)
     for event in events:
         pos1 = random.randrange(2, len(syn_chr))
-        # pick a random number to decide the length of the fragment
+        # Pick a random number to decide the length of the fragment
         R = int(random.gauss(mu, sigma))
         if R < 1:
             R = 1
@@ -243,7 +237,7 @@ def SCRaMbLE4(syn_chr, Number_events, essential=[], mu=0, sigma=10, CEN=[], prob
             # this loop makes repeat the choosing if R == 0
             R = abs(int(random.gauss(mu, sigma)))
 
-        # the second cut position pos2 could be before or after the first position pos1
+        # The second cut position pos2 could be before or after the first position pos1
         if random.random() >= 0.5 or pos1 == 0:
             pos2 = pos1 + R
         else:
@@ -283,7 +277,7 @@ def SCRaMbLE4(syn_chr, Number_events, essential=[], mu=0, sigma=10, CEN=[], prob
         return new_chr, events
     return new_chr
 
-# Plot the SCRaMbLE events length. This should follow a "discretized half normal distribution"
+# Plot the SCRaMbLE events length. This should follow a "Discretized Half-Normal Distribution".
 def plot_events_length(events=100000, mu=0, sigma=10):
     syn_chr = list(range(1, 45))
     Dict_E_length = {}
@@ -292,7 +286,7 @@ def plot_events_length(events=100000, mu=0, sigma=10):
 
     for _ in range(events):
         pos1 = random.randrange(0, len(syn_chr), 1)
-        # pick a random number to decide the length of the fragment. In the Gaussian distribution, mu is the mean and sigma is the standard deviation.
+        # Pick a random number to decide the length of the fragment. In the Gaussian distribution, mu is the mean and sigma is the standard deviation.
         # Discretized truncated normal distribution (DTND)
         #R = int(random.gauss(mu, sigma))
         #if R < 1:
@@ -314,7 +308,7 @@ def plot_events_length(events=100000, mu=0, sigma=10):
             pos2 = 0
         E_length = abs(pos2 - pos1)
         Dict_E_length[E_length] = Dict_E_length[E_length] + 1
-    # remove keys with zero events.
+    # Remove keys with zero events.
     for i in range(len(syn_chr)+1):
         if Dict_E_length[i] == 0:
             Dict_E_length.pop(i, None)
@@ -368,7 +362,7 @@ def plot_events_length(events=100000, mu=0, sigma=10):
     plt.close()
     return Dict_E_length_probability
 
-# This make sure that there is at last one SCRaMbLE event each time
+# This makes sure that there is at last one SCRaMbLE event each time.
 def force_SCRaMLE(syn_chr, Number_events, essential=[], mu=0, sigma=7, CEN=[], probability=[0, 2, 2, 1]):
     new_chr2 = syn_chr[:]
     for _ in range(Number_events):
@@ -380,7 +374,7 @@ def force_SCRaMLE(syn_chr, Number_events, essential=[], mu=0, sigma=7, CEN=[], p
         #print(new_chr2)
     return new_chr2
 
-# This make sure that there is at last one SCRaMbLE event each time
+# This makes sure that there is at last one SCRaMbLE event each time.
 def force_SCRaMLE_lin_cir(syn_chr: list, Number_events: int, essential=[], circular=False, mu=0, sigma=7, CEN=[], force=True, probability=[0, 2, 2, 1]):
     if not(force):
         if circular:
@@ -439,13 +433,6 @@ def force_SCRaMLE_lin_cir_events(syn_chr: list, Number_events: int, essential=[]
 #essential = [2,7,9,10,12,20]
 #print(force_SCRaMLE(syn_chr, 500, essential))
 
-"""
-mu=7
-sigma=7
-for i in range(50):
-    R = int(random.gauss(mu, sigma))
-    print(R)
-"""
 
 def SCRaMbLE4_lin_cir(syn_chr, Number_events, essential=[], circular=False, mu=7, sigma=7, CEN=[], probability=[3, 2, 2, 1]):
     if circular:
@@ -565,3 +552,11 @@ if __name__ == "__main__":
     #plot_events_length(events=1000000, mu=0, sigma=10)
 
     #print(select_SCRaMLE_evo(syn_chr=syn_chr, Number_events=30, essential=essential, circular=False, SEs_before_selection=5, LUs_selection=[27, 40], mu=0, sigma=7, CEN=[], force=True, probability=[0, 2, 2, 1]))
+
+    """
+    mu=7
+    sigma=7
+    for i in range(50):
+        R = int(random.gauss(mu, sigma))
+        print(R)
+    """
